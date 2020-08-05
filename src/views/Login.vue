@@ -48,6 +48,8 @@
                         </v-col>
                     </v-row>
 
+                    <v-checkbox v-model="rememberMe" color="#28DF47" label="تذكرني"></v-checkbox>
+
                     <v-btn color="#28DF47" dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
                         تسجيل الدخول
                     </v-btn>
@@ -88,6 +90,7 @@ export default {
             color: '',
             snackbar: false,
             btn_loading: false,
+            rememberMe: false
         }
     },
 
@@ -97,6 +100,9 @@ export default {
                 name: 'home'
             });
         }
+
+        let self = this;
+        console.log(self.rememberMe == false);
     },
 
     computed: {
@@ -121,7 +127,13 @@ export default {
                             this.color = '#28DF47';
                             this.message = `مرحبا بك ${user.userName}` + ' تم تسجيل الدخول بنجاح'
                             this.btn_loading = false;
-                            localStorage.setItem('username', user.userName);
+                            if (this.rememberMe == true) {
+                                localStorage.setItem('ACCESS_TOKEN', result.token);
+                                localStorage.setItem('username', user.userName);
+                            } else {
+                                sessionStorage.setItem("ACCESS_TOKEN", result.token);
+                                sessionStorage.setItem('username', user.userName);
+                            }
                             if (this.$store.state.token !== null) {
                                 this.$router.push({
                                     name: 'home'

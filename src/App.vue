@@ -219,13 +219,6 @@ export default {
         window.addEventListener('scroll', event => {
             this.goUpBtn();
         });
-
-        window.addEventListener('beforeunload', (event) => {
-            if (this.$store.state.cart.length > 0) {
-                event.preventDefault();
-                event.returnValue = 'لديك منتجات في السلة';
-            }
-        })
     },
 
     watch: {
@@ -260,7 +253,7 @@ export default {
             }
         }
     },
-
+    
     metaInfo: {
         title: 'الصفحة الرئيسية',
         titleTemplate: '%s | المتجر العراقي',

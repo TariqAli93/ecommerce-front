@@ -1,5 +1,5 @@
 <template>
-<div class="shopping-cart-page">
+<div class="shopping-cart-page" :class="{'white': $store.getters.product_count < 1}">
     <div class="breadcrumbs grey lighten-4">
         <v-container>
             <v-breadcrumbs :items="breadcrumb_list">
@@ -61,6 +61,14 @@
                 </v-col>
 
                 <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+                    <div class="coupon">
+                        <div class="d-flex align-center justify-center mb-5 pa-3" style="background: white; border-radius: 10px;">
+                            <input type="text" class="coupon-input" placeholder="كود الخصم">
+                            <v-btn color="#28DF47" depressed rounded dark>
+                                حفظ الكود
+                            </v-btn>
+                        </div>
+                    </div>
                     <div class="card">
                         <div class="card-head mb-3 pa-4">
                             <h2 class="text-center">الناتج الكلي</h2>
@@ -128,7 +136,7 @@ export default {
                     href: '/cart',
                 }
             ],
-            tax_number: 0,
+            tax_number: 10,
             addressVal: 'بغداد-الدورة-شارع ابو طيارة',
             productsImagesPath: new serverPath().URL,
             isEditing: null
@@ -146,7 +154,7 @@ export default {
     },
     methods: {
         removeItem(index) {
-            this.$store.dispatch('removeItemFromCartPage', index);
+            this.$store.dispatch('removeItemFromCart', index);
         },
 
         incresQty(index) {
@@ -160,7 +168,7 @@ export default {
         }
     },
     mounted() {
-        if(this.$store.getters.isLoggedIn !== true) {
+        if (this.$store.getters.isLoggedIn !== true) {
             this.$router.push('/login')
         }
     }
@@ -170,6 +178,23 @@ export default {
 <style lang="scss">
 .shopping-cart-page {
     background: #f1f1f1;
+
+    &.white {
+        background: white;
+    }
+
+    .coupon {
+        &-input {
+            background: whitesmoke;
+            padding: 10px 10px;
+            border: none;
+            outline: none;
+            box-shadow: none;
+            border-radius: 30px;
+            margin: 0 0 0 10px;
+            width: 100%;
+        }
+    }
 
     .qty {
         display: flex;
@@ -203,7 +228,7 @@ export default {
 
         .emptystate {
             background: {
-                image: url('../assets/images/empty.png');
+                image: url('../assets/images/empty-bag-bg.png');
                 repeat: no-repeat;
                 size: contain;
                 position: center;
@@ -232,6 +257,12 @@ export default {
         border-radius: 10px;
         position: sticky;
         top: 175px;
+        box-shadow: none;
+
+        &:hover {
+            box-shadow: none;
+            transform: translateY(0);
+        }
 
         .v-list {
             background: transparent !important;

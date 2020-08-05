@@ -11,30 +11,29 @@
     </v-snackbar>
 
     <v-carousel class="custom-carousel" show-arrows delimiter-icon="fa-minus" next-icon="fa-long-arrow-right" prev-icon="fa-long-arrow-left" hide-delimiter-background show-arrows-on-hover>
-        <v-carousel-item v-for="i in 5" :key="i">
-            <img src="../assets/images/login.jpg">
+        <v-carousel-item v-for="i in products" :key="i.idProduct">
+            <img :src="server_url + i.image">
         </v-carousel-item>
     </v-carousel>
 
-    <!-- newest -->
     <section class="section">
         <div class="title">
             <span>احدث المنتجات</span>
         </div>
         <v-container fluid>
-            <v-row v-if="!loaddedContent">
+            <v-row v-if="!pageLoaded">
                 <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="i in 3" :key="i">
                     <v-sheet>
-                        <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
+                        <v-skeleton-loader class="mx-auto" type="card-avatar"></v-skeleton-loader>
                     </v-sheet>
                 </v-col>
             </v-row>
 
             <v-row v-else>
-                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="product in newProducts" :key="product.idProduct">
+                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="product in new_products" :key="product.idProduct">
                     <div class="card">
                         <div class="card-image">
-                            <img :src="productsImagesPath + product.image" />
+                            <img :src="server_url + product.image" />
                         </div>
 
                         <div class="card-content">
@@ -58,6 +57,10 @@
                                 <p>{{ product.description.substring(0,100) + '...' }}</p>
                             </div>
                         </div>
+
+                        <div class="product-name">
+                            <h2>{{ product.productName }}</h2>
+                        </div>
                     </div>
                 </v-col>
             </v-row>
@@ -65,38 +68,36 @@
     </section>
 
     <section class="featured-section">
-        <!-- <div class="image" style="`background-image:`"></div> -->
-        <v-img :src="featuredProduct.image" class="image" tag="div"></v-img>
+        <div class="image" :style="`background-image: url(${server_url + featured_product.image})`"></div>
         <div class="content">
-            <h2>{{ featuredProduct.productName }}</h2>
-            <p>{{ featuredProduct.description }}</p>
-            <v-btn color="black" dark medium depressed>
+            <h2>{{ featured_product.name }}</h2>
+            <p>{{ featured_product.description.substring(0,250) + '...' }}</p>
+            <v-btn :to="`/product/${featured_product.id}`" color="black" dark medium depressed>
                 <i class="im im-arrow-right" style="margin-left: 5px; font-size: 13px"></i>
                 <span>عرض المنتج</span>
             </v-btn>
         </div>
     </section>
 
-    <!-- best sales -->
     <section class="section">
         <div class="title">
             <span>افضل المبيعات</span>
         </div>
         <v-container fluid>
             <v-row>
-                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="i in 3" :key="i">
-                    <v-sheet v-if="!loaddedContent">
+                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="product in best_products" :key="product.idProduct">
+                    <v-sheet v-if="!pageLoaded">
                         <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
                     </v-sheet>
 
-                    <div class="card" v-else>
+                    <div class="card">
                         <div class="card-image">
-                            <img src="../assets/images/login.jpg" />
+                            <img :src="server_url + product.image" />
                         </div>
 
                         <div class="card-content">
                             <div class="card-content-header">
-                                <h2>اسم المنتج</h2>
+                                <h2>{{ product.productName }}</h2>
                             </div>
 
                             <div class="card-content-body">
@@ -105,15 +106,19 @@
                                         <i class="im im-eye" style="font-size: 13px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px">
+                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px" @click="saveToCart(product)">
                                         <i class="im im-shopping-cart" style="font-size: 13px"></i>
                                     </v-btn>
                                 </div>
 
-                                <h4><span>{{ i * 200 }}</span> <i class="fa fa-dollar"></i> </h4>
+                                <h4><span>{{ product.price }}</span> <i class="fa fa-dollar"></i> </h4>
 
-                                <p>{{ 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis, hic omnis rem, odio atque inventore optio, repellendus accusamus numquam similique ipsum illum tempora tenetur dolore neque doloremque? Nulla, fuga et.'.substring(0,100) + '...' }}</p>
+                                <p>{{ product.description.substring(0,100) + '...' }}</p>
                             </div>
+                        </div>
+
+                        <div class="product-name">
+                            <h2>{{ product.productName }}</h2>
                         </div>
                     </div>
                 </v-col>
@@ -131,26 +136,25 @@
         </div>
     </section>
 
-    <!-- all products -->
     <section class="section">
         <div class="title">
             <span>كل المنتجات</span>
         </div>
         <v-container fluid>
             <v-row>
-                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="(item, index) in allProducts" :key="index">
-                    <v-sheet v-if="!loaddedContent" color="grey lighten-4">
+                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="(product, index) in products" :key="index">
+                    <v-sheet v-if="!pageLoaded" color="grey lighten-4">
                         <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
                     </v-sheet>
 
-                    <div class="card" v-else>
+                    <div class="card">
                         <div class="card-image">
-                            <img :src="productsImagesPath + item.image" />
+                            <img :src="server_url + product.image" />
                         </div>
 
                         <div class="card-content">
                             <div class="card-content-header">
-                                <h2>{{ item.productName }}</h2>
+                                <h2>{{ product.productName }}</h2>
                             </div>
 
                             <div class="card-content-body">
@@ -159,25 +163,29 @@
                                         <i class="im im-eye" style="font-size: 13px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px" @click="saveToCart(item)">
+                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px" @click="saveToCart(product)">
                                         <i class="im im-shopping-cart" style="font-size: 13px"></i>
                                     </v-btn>
                                 </div>
 
-                                <h4><span>{{ item.price }}</span> <i class="fa fa-dollar"></i> </h4>
+                                <h4><span>{{ product.price }}</span> <i class="fa fa-dollar"></i> </h4>
 
-                                <p>{{ item.description.substring(0,100) + '...' }}</p>
+                                <p>{{ product.description.substring(0,100) + '...' }}</p>
                             </div>
+                        </div>
+
+                        <div class="product-name">
+                            <h2>{{ product.productName }}</h2>
                         </div>
                     </div>
                 </v-col>
             </v-row>
 
-            <div v-show="containerLoading" class="container-loading">
+            <div v-show="isLoadingMoreProducts" class="container-loading">
                 <img src="../assets/images/loading-icon.svg" alt="Loading...">
             </div>
 
-            <v-btn color="#28DF47" :disabled="containerLoading || !loaddedContent" class="mx-auto" @click="showMore()" style="margin: 0 auto; display: block; margin-top: 15px" dark depressed rounded>
+            <v-btn color="#28DF47" :disabled="isLoadingMoreProducts || !pageLoaded" class="mx-auto" style="margin: 0 auto; display: block; margin-top: 15px" dark depressed rounded @click="getMoreProducts">
                 <i class="im im-plus" style="font-size: 10px; margin-left: 5px"></i>
                 <span>عرض المزيد</span>
             </v-btn>
@@ -187,38 +195,31 @@
 </template>
 
 <script>
-import moment, {
-    localeData
-} from 'moment'
 import serverPath from '../plugins/ServerSidePath'
 export default {
     data() {
         return {
-            show: false,
-            allCount: 3,
-            containerLoading: false,
-            loaddedContent: false,
+            isLoadingMoreProducts: false,
+            pageLoaded: false,
             addToCartSnackbar: false,
             addToCartSnackbarText: '',
             addToCartSnackbarColor: '',
-            productsImagesPath: new serverPath().URL,
-            featuredProduct: [],
-            newProducts: [],
-            allProducts: [],
-            allProductsCount: 3
+            server_url: new serverPath().URL,
+            products: [],
+            products_number: 3,
+            new_products: [],
+            best_products: [],
+            featured_product: {
+                id: '',
+                name: '',
+                price: '',
+                image: '',
+                description: ''
+            }
         }
     },
 
     methods: {
-        showMore() {
-            this.containerLoading = true
-            setTimeout(() => {
-                this.allProductsCount += 3;
-                this.containerLoading = false;
-                this.getAllProducts();
-            }, 2000)
-        },
-
         saveToCart(product) {
             this.addToCartSnackbar = false;
             this.$store.dispatch('additemToCart', {
@@ -230,37 +231,77 @@ export default {
             this.addToCartSnackbarColor = 'secondary';
         },
 
-        getNewProducts() {
-            let self = this;
-            self.axios.get('newProducts')
-                .then(data => {
-                    self.loaddedContent = true;
-                    self.newProducts = data.data;
-                })
-                .catch(err => {
-                    console.error(err)
-                })
-        },
-
         getAllProducts() {
             let self = this;
+            self.axios.get('products').then(data => {
+                self.products = data.data.reverse().splice(0, self.products_number);
+                self.featured_product = {
+                    id: data.data[2].idProduct,
+                    name: data.data[2].productName,
+                    price: data.data[2].price,
+                    image: data.data[2].image,
+                    description: data.data[2].description.substring(0, 250),
+                };
+                setTimeout(() => {
+                    self.pageLoaded = true;
+                }, 1500)
+            }).catch(err => {
+                throw new Error(err)
+            })
+        },
+
+        getNewProducts() {
+            let self = this;
+            let products = [];
             self.axios.get('products')
-                .then(data => {
-                    self.allProducts = data.data.slice(0, self.allProductsCount);
-                    self.featuredProduct = data.data[0];
-                })
-                .catch(err => {
-                    console.error(err);
-                })
+            .then(data => {
+                products = data.data.filter(product => {
+                    return Number(product.statusId) === 1
+                });
+
+                self.new_products = products.splice(0, 3);
+                setTimeout(() => {
+                    self.pageLoaded = true;
+                }, 1500);
+            }).catch(err => {
+                throw new Error(err)
+            })
+        },
+
+        getBestSalesProducts() {
+            let self = this;
+            let products = [];
+            self.axios.get('products')
+            .then(data => {
+                products = data.data.filter(product => {
+                    return Number(product.statusId) === 3
+                });
+
+                self.best_products = products.splice(0, 3);
+                setTimeout(() => {
+                    self.pageLoaded = true;
+                }, 1500)
+            }).catch(err => {
+                throw new Error(err)
+            })
+        },
+
+        getMoreProducts() {
+            let self = this;
+            self.isLoadingMoreProducts = true;
+            setTimeout(() => {
+                self.products_number += 3;
+                self.isLoadingMoreProducts = false;
+                self.getAllProducts();
+            }, 2000);
         }
     },
 
     mounted() {
-        this.getNewProducts()
         this.getAllProducts();
+        this.getNewProducts();
+        this.getBestSalesProducts();
     },
-
-    computed: {}
 }
 </script>
 
@@ -384,15 +425,14 @@ export default {
         background: white;
         overflow: hidden;
 
-        .v-image {
+        .image {
             background: {
-                image: url('../assets/images/product-1.jpg');
                 repeat: no-repeat;
                 size: cover;
                 position: center;
             }
 
-            width: 44%;
+            width: 60%;
             height: 550px;
         }
 
@@ -449,6 +489,22 @@ export default {
         box-shadow: 0 4px 13px 0 rgb(0, 0, 0, 9%);
         transition: all 0.2s ease 0.05s;
 
+        .product-name {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            position: absolute;
+            width: 100%;
+            padding: 30px;
+            left: 0;
+            bottom: 0;
+            text-align: center;
+            height: 200px;
+            background: rgb(0, 0, 0);
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.6898109585631127) 0%, rgba(255, 255, 255, 0) 100%);
+            color: #28DF47;
+        }
+
         &-image {
             display: block;
             width: 100%;
@@ -473,7 +529,7 @@ export default {
             min-height: 225px;
             background: transparent;
             box-shadow: none;
-            bottom: -205px;
+            bottom: -100%;
             left: 0;
             right: 0;
             margin: 0 auto;
@@ -482,6 +538,8 @@ export default {
             justify-content: center;
             flex-direction: column;
             padding: 20px;
+            opacity: 0;
+            z-index: 10;
             transition: all 0.2s ease 0.05s;
 
             &-header {
@@ -563,6 +621,7 @@ export default {
 
             .card-content {
                 bottom: 0px;
+                opacity: 1;
                 background: rgba(white, .95);
 
                 &-header {

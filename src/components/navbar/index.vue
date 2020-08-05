@@ -62,11 +62,32 @@
 
         <div>
             <ul class="navlist">
-                <li v-for="list in navlist" :key="list.id">
-                    <router-link :to="list.url" exact-active-class="active" exact>
-                        {{ list.text }}
+                <li>
+                    <router-link tag="a" to="/" exact-active-class="active" exact>
+                        الرئيسية
                     </router-link>
                 </li>
+                <li v-for="category in categories" :key="category.idCategory" class="order-1">
+                    <router-link tag="a" :to="`/category/${category.idCategory}`" exact-active-class="active" exact>
+                        {{ category.categoryName }}
+                    </router-link>
+                </li>
+
+                <v-menu color="#28DF47" open-on-hover left transition="slide-y-transition" bottom v-if="categories.length < 7">
+                    <template v-slot:activator="{ on, attrs }">
+                        <li class="navlist-li order-2">
+                            <a v-bind="attrs" v-on="on" exact-active-class="active" exact>
+                                المزيد
+                            </a>
+                        </li>
+                    </template>
+
+                    <v-list nav color="#28DF47" dark>
+                        <v-list-item v-for="category in categoriesNotInList" :key="category.idCategory" :to="`/category/${category.idCategory}`">
+                            <v-list-item-title color="#28DF47">{{ category.categoryName }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
 
                 <v-menu v-if="$store.getters.isLoggedIn" color="#28DF47" left open-on-hover transition="slide-y-transition" bottom>
                     <template v-slot:activator="{ on, attrs }">
@@ -115,6 +136,8 @@ export default {
             search_input: null,
             dialog_logout: false,
             dialog_logout_accept_loading: false,
+            categories: [],
+            categoriesNotInList: [],
             social_media: [{
                     icon: 'facebook',
                     id: 1,
@@ -131,47 +154,20 @@ export default {
                     color: '#28DF47'
                 },
             ],
-
-            navlist: [{
-                    text: 'الرئيسية',
-                    url: '/',
-                    id: 1
-                },
-                {
-                    text: 'ملابس',
-                    url: '/fashon',
-                    id: 2
-                },
-                {
-                    text: 'اجهزة كهربائية',
-                    url: '/elctronics',
-                    id: 3
-                },
-                {
-                    text: 'هواتف ذكية',
-                    url: '/mobiles',
-                    id: 4
-                },
-                {
-                    text: 'برامج',
-                    url: '/software',
-                    id: 5
-                },
-                {
-                    text: 'العاب الكترونية',
-                    url: '/games',
-                    id: 6
-                },
-            ]
         }
     },
 
     mounted() {
-        this.$store.dispatch('productsMethod', 'products').then(result => {
-            this.search_products = result
-        }).catch(err => {
-            console.error(err);
-        })
+        let self = this;
+        self.axios.get('products')
+            .then(data => {
+                self.search_products = data.data;
+            })
+            .catch(err => {
+                console.error(err);
+            });
+
+        self.getCategories();
     },
 
     watch: {
@@ -182,7 +178,11 @@ export default {
 
     computed: {
         username() {
-            return localStorage.username
+            if (localStorage.username) {
+                return localStorage.username
+            } else {
+                return sessionStorage.username
+            }
         },
     },
 
@@ -216,6 +216,19 @@ export default {
             } else {
                 return false
             }
+        },
+
+        getCategories() {
+            let self = this;
+            self.axios.get('categories')
+                .then(data => {
+                    self.categories = data.data.slice(0, 5);
+
+                    self.categoriesNotInList = data.data.slice(5, data.data.length);
+                })
+                .catch(err => {
+                    console.error(err);
+                })
         },
 
         logout() {
@@ -354,6 +367,14 @@ export default {
             padding: 0;
             margin: 0;
 
+            .order-1 {
+                order: 1;
+            }
+
+            .order-2 {
+                order: 2;
+            }
+
             li {
                 display: block;
                 padding: 10px;
@@ -396,6 +417,7 @@ export default {
 
             .v-btn {
                 margin-right: 15px;
+                order: 2;
             }
         }
     }

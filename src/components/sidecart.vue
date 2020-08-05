@@ -52,7 +52,7 @@ export default {
 <style lang="scss">
 .emptystate {
     background: {
-        image: url('../assets/images/empty.png');
+        image: url('../assets/images/empty-bag-bg.png');
         repeat: no-repeat;
         size: contain;
         position: center;

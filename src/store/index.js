@@ -4,13 +4,15 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
+let cart = localStorage.getItem('cart');
+
 export default new Vuex.Store({
   state: {
     sidebar: false,
     api: '',
-    token: localStorage.getItem('ACCESS_TOKEN') || null,
-    username: localStorage.getItem('username') || null,
-    cart: [],
+    token: localStorage.getItem('ACCESS_TOKEN') || sessionStorage.getItem('ACCESS_TOKEN') || null,
+    username: localStorage.getItem('username') || sessionStorage.getItem('username') || null,
+    cart: cart ? JSON.parse(cart) : [],
   },
   
   mutations: {
@@ -36,27 +38,27 @@ export default new Vuex.Store({
       } else {
         state.cart.push({product, qty});
       }
+
+      localStorage.setItem('cart', JSON.stringify(state.cart));
     },
 
     REMOVE_PRODUCT(state, index) {
-      if(state.cart[index].qty > 1) {
-        state.cart[index].qty --;
-      } else {
-        state.cart.splice(index, 1);
-      }
+      state.cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(state.cart));
     },
 
     INCRES_QTY(state, index) {
       state.cart[index].qty++
+      localStorage.setItem('cart', JSON.stringify(state.cart));
     },
 
     DECRES_QTY(state, index) {
       state.cart[index].qty--
+      if(state.cart[index].qty < 1) {
+        state.cart[index].qty = 1;
+      }
+      localStorage.setItem('cart', JSON.stringify(state.cart));
     },
-
-    REMOVE_PRODUCT_CART_PAGE(state, index) {
-      state.cart.splice(index, 1);
-    }
   },
   
   getters: {
@@ -80,7 +82,7 @@ export default new Vuex.Store({
       })
 
       return total
-    }
+    },
   },
 
   actions: {
@@ -91,8 +93,7 @@ export default new Vuex.Store({
         .then((data) => {
           context.commit('USER_LOGIN', data.data.token)
           axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
-          localStorage.setItem('ACCESS_TOKEN', data.data.token);
-          resolve(data)
+          resolve(data.data)
         })
         .catch((error) => {
           reject(error)
@@ -105,25 +106,19 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         if(this.state.token !== null || this.state.token !== '') {
           context.commit('LOGOUT');
-          localStorage.removeItem('ACCESS_TOKEN');
-          localStorage.removeItem('username');
+          let session = sessionStorage.getItem('ACCESS_TOKEN');
+
+          if(session) {
+            sessionStorage.removeItem('ACCESS_TOKEN');
+            sessionStorage.removeItem('username');
+          } else {
+            localStorage.removeItem('ACCESS_TOKEN');
+            localStorage.removeItem('username');
+          }
           resolve(true)
         } else {
           reject('Your Allready Logged out');
         }
-      })
-    },
-
-    // get product method
-    productsMethod(context, api) {
-      return new Promise((resolve, reject) => {
-        context.commit('SET_API', api)
-        axios.get(`${this.state.api}`)
-        .then(data => {
-          resolve(data.data);
-        }).catch(err => {
-          reject(err)
-        })
       })
     },
 
@@ -134,10 +129,6 @@ export default new Vuex.Store({
 
     removeItemFromCart({commit}, index) {
       commit('REMOVE_PRODUCT', index);
-    },
-
-    removeItemFromCartPage({commit}, index) {
-      commit('REMOVE_PRODUCT_CART_PAGE', index);
     },
 
     countUpQty({commit}, index) {

@@ -5,6 +5,8 @@ import Login from '../views/Login'
 import Register from '../views/Register'
 import Cart from '../views/Cart'
 import Profile from '../views/Profile'
+import Category from '../views/Category'
+import Product from '../views/Product'
 
 Vue.use(VueRouter)
 
@@ -48,7 +50,23 @@ Vue.use(VueRouter)
     meta: {
       requiresVisitor: true
     }
-  }
+  },
+  {
+    path: '/category/:id',
+    name: 'category',
+    component: Category,
+    meta: {
+      requiresVisitor: true
+    }
+  },
+  {
+    path: '/product/:id',
+    name: 'product',
+    component: Product,
+    meta: {
+      requiresVisitor: true
+    }
+  },
 ]
 
 const router = new VueRouter({
