@@ -1,5 +1,19 @@
 <template>
 <div class="shopping-cart-page" :class="{'white': $store.getters.product_count < 1}">
+    <v-sheet v-if="loading_screen" class="loading_sheet">
+        <img src="../assets/images/loading-icon.svg" alt="Loading...">
+    </v-sheet>
+
+    <v-snackbar v-model="addToCartSnackbar" :color="addToCartSnackbarColor">
+        {{ addToCartSnackbarText }}
+
+        <template v-slot:action="{ attrs }">
+            <v-btn :color="addToCartSnackbarColor === 'error' ? 'secondary' : 'white'" text v-bind="attrs" @click="addToCartSnackbar = false">
+                <i class="im im-x-mark"></i>
+            </v-btn>
+        </template>
+    </v-snackbar>
+
     <div class="breadcrumbs grey lighten-4">
         <v-container>
             <v-breadcrumbs :items="breadcrumb_list">
@@ -62,12 +76,16 @@
 
                 <v-col cols="12" sm="12" md="4" lg="4" xl="4">
                     <div class="coupon">
-                        <div class="d-flex align-center justify-center mb-5 pa-3" style="background: white; border-radius: 10px;">
-                            <input type="text" class="coupon-input" placeholder="كود الخصم">
-                            <v-btn color="#28DF47" depressed rounded dark>
+                        <div v-if="$store.getters.isLoggedIn" class="d-flex align-center justify-center mb-5 pa-3" style="background: white; border-radius: 10px;">
+                            <input type="text" class="coupon-input" v-model="couponInput" placeholder="كود الخصم">
+                            <v-btn color="#28DF47" :loading="couponLoading" :disabled="couponLoading" depressed rounded :dark="!couponLoading" @click="saveCoupon(couponInput)">
                                 حفظ الكود
                             </v-btn>
                         </div>
+
+                        <v-alert type="warning" v-else>
+                            <span>يرجى تسجيل الدخول</span>
+                        </v-alert>
                     </div>
                     <div class="card">
                         <div class="card-head mb-3 pa-4">
@@ -104,9 +122,17 @@
                             </v-list-item>
                         </v-list>
                         <v-divider></v-divider>
-                        <v-btn color="#28DF47" large depressed block rounded dark class="mt-3">
+                        <div class="note pt-5">
+                            <v-textarea v-model="payment_note" color="#28DF47" label="تفاصيل اخرى" outlined></v-textarea>
+                        </div>
+                        <v-divider></v-divider>
+                        <v-btn v-if="$store.getters.isLoggedIn" color="#28DF47" large depressed block rounded dark class="mt-3" @click="bay()">
                             اكمل عملية الشراء
                         </v-btn>
+
+                        <v-alert type="warning" v-else>
+                            <span>يرجى تسجيل الدخول</span>
+                        </v-alert>
                     </div>
                 </v-col>
             </v-row>
@@ -125,6 +151,12 @@ import serverPath from '../plugins/ServerSidePath'
 export default {
     data() {
         return {
+            couponInput: '',
+            couponLoading: false,
+            addToCartSnackbar: false,
+            addToCartSnackbarText: '',
+            addToCartSnackbarColor: '',
+            tax_number: 10,
             breadcrumb_list: [{
                     text: 'المتجر',
                     disabled: false,
@@ -136,10 +168,12 @@ export default {
                     href: '/cart',
                 }
             ],
-            tax_number: 10,
             addressVal: 'بغداد-الدورة-شارع ابو طيارة',
             productsImagesPath: new serverPath().URL,
-            isEditing: null
+            isEditing: null,
+            payment: true,
+            payment_note: '',
+            loading_screen: false,
         }
     },
 
@@ -147,12 +181,22 @@ export default {
         cart() {
             return this.$store.state.cart;
         },
+
         totalPrice() {
-            // return ((this.$store.getters.totalPrice / this.tax_number) * 100);
             return (this.$store.getters.totalPrice * this.tax_number) / 100 + this.$store.getters.totalPrice
         },
     },
+
     methods: {
+        decodeJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        },
+
         removeItem(index) {
             this.$store.dispatch('removeItemFromCart', index);
         },
@@ -165,9 +209,112 @@ export default {
         decresQty(index) {
             this.$store.dispatch('countDownQty', index)
             console.log(index);
+        },
+
+        startSnackBar(text, color) {
+            let self = this;
+            self.addToCartSnackbar = true;
+            self.addToCartSnackbarText = text;
+            self.addToCartSnackbarColor = color;
+        },
+
+        saveCoupon(number) {
+            let self = this;
+            let couponNumber = localStorage.coupon ? JSON.parse(localStorage.coupon) : null;
+            self.couponLoading = true;
+
+            if (couponNumber === null) {
+                self.axios.get(`couponDate/${number}`)
+                    .then(data => {
+                        if (data.data === "" || data.data.isUsed === 1) {
+                            setTimeout(() => {
+                                self.startSnackBar('تم انتهاء صلاحية الكود', 'error');
+                                self.couponLoading = false;
+                            }, 1400)
+                        } else {
+                            setTimeout(() => {
+                                self.startSnackBar(`تم اضافة كود الخصم - ستحصل على خصم ${data.data.value} %`, '#28DF47');
+                                self.couponLoading = false;
+                                localStorage.setItem('coupon', JSON.stringify(data.data));
+
+                                self.axios.put(`couponStatus/${data.data.idCoupon}`, {
+                                    status: 1
+                                }).then(result => {
+                                    console.log(result.data)
+                                }).catch(err => {
+                                    console.error(err.response)
+                                })
+                            }, 1400)
+                        }
+                    })
+                    .catch(err => {
+                        self.startSnackBar('يرجى ادخال رقم الكوبون', 'error');
+                        self.couponLoading = false;
+                    })
+            } else {
+                self.startSnackBar('لا يمكنك اضافة اكثر من كوبون واحد', 'error');
+                self.couponLoading = false;
+            }
+        },
+
+        bay() {
+            let self = this;
+            let token = self.$store.state.token;
+            let user = self.decodeJwt(token);
+            let userId = user.id;
+            let products = [];
+            let coupon = localStorage.coupon ? JSON.parse(localStorage.coupon).value : 0;
+            let percent = '';
+            let pricetax = '';
+            let itemprice = '';
+            let itemPlusQty = '';
+
+            let stateCart = self.$store.state.cart.forEach(item => {
+                percent = Math.floor((item.product.price * item.qty) / 100 * coupon);
+                pricetax = Math.floor((item.product.price * item.qty) / 100 * self.tax_number);
+                itemPlusQty = Math.floor(item.product.price * item.qty);
+                itemprice = Math.floor(itemPlusQty + pricetax);
+
+                products.push({
+                    productId: item.product.idProduct,
+                    quantity: item.qty,
+                    discount: coupon,
+                    totalPrice: Math.floor(itemprice - percent)
+                });
+            });
+
+            self.axios.post('addMultiInvoice', {
+                userId: userId,
+                note: self.payment_note,
+                products: products,
+
+            }, {
+                headers: {
+                    Authorization: `bearer ${self.$store.state.token}`
+                }
+            }).then(result => {
+                self.loading_screen = true;
+                console.log(result)
+                setTimeout(() => {
+                    self.startSnackBar('تم الشراء بنجاح . شكرا لكم', '#28DF47');
+                    self.loading_screen = false;
+                    setTimeout(() => {
+                        localStorage.removeItem('coupon');
+                        localStorage.removeItem('cart');
+                        self.$store.state.cart = [];
+                        self.$router.push({
+                            name: 'profile'
+                        });
+                    }, 1500)
+                }, 2400);
+            }).catch(err => {
+                self.loading_screen = false;
+                console.error(err.response)
+            });
         }
     },
     mounted() {
+        this.tax_number = this.$store.state.tax_number || 0;
         if (this.$store.getters.isLoggedIn !== true) {
             this.$router.push('/login')
         }
@@ -178,9 +325,40 @@ export default {
 <style lang="scss">
 .shopping-cart-page {
     background: #f1f1f1;
+    position: relative;
 
     &.white {
         background: white;
+    }
+
+    .loading_sheet {
+        position: absolute !important;
+        top: 0;
+        right: 0;
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        background: rgba(white, .80) !important;
+
+        img {
+            display: block;
+            max-width: 120px;
+            max-height: 120px;
+            animation: spin .7s linear infinite;
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     .coupon {

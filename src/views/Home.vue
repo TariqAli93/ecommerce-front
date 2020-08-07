@@ -24,14 +24,14 @@
             <v-row v-if="!pageLoaded">
                 <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="i in 3" :key="i">
                     <v-sheet>
-                        <v-skeleton-loader class="mx-auto" type="card-avatar"></v-skeleton-loader>
+                        <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
                     </v-sheet>
                 </v-col>
             </v-row>
 
             <v-row v-else>
                 <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="product in new_products" :key="product.idProduct">
-                    <div class="card">
+                    <div class="card" v-show="pageLoaded">
                         <div class="card-image">
                             <img :src="server_url + product.image" />
                         </div>
@@ -43,13 +43,15 @@
 
                             <div class="card-content-body">
                                 <div class="card-content-body-btns">
-                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px">
+                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px" :to="`/product/${product.idProduct}`">
                                         <i class="im im-eye" style="font-size: 13px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px" @click="saveToCart(product)">
+                                    <v-btn color="#28DF47" v-if="product.quantity > 1" dark rounded width="40px" min-width="20px" height="40px" :disabled="product.quantity < 1" @click="saveToCart(product)">
                                         <i class="im im-shopping-cart" style="font-size: 13px"></i>
                                     </v-btn>
+
+                                    <small v-else>غير متوفر</small>
                                 </div>
 
                                 <h4><span>{{ product.price }}</span> <i class="fa fa-dollar"></i> </h4>
@@ -68,8 +70,17 @@
     </section>
 
     <section class="featured-section">
-        <div class="image" :style="`background-image: url(${server_url + featured_product.image})`"></div>
-        <div class="content">
+        <v-sheet v-if="!pageLoaded" color="grey lighten-4" height="550">
+            <v-skeleton-loader style="width: 450px" height="550" class="image" type="image" boilerplate></v-skeleton-loader>
+        </v-sheet>
+
+        <div v-else class="image" :style="`background-image: url(${server_url + featured_product.image})`"></div>
+
+        <v-sheet v-if="!pageLoaded" color="grey lighten-4" style="width: 1000px">
+            <v-skeleton-loader type="article, actions, sentences" boilerplate></v-skeleton-loader>
+        </v-sheet>
+
+        <div class="content" v-else>
             <h2>{{ featured_product.name }}</h2>
             <p>{{ featured_product.description.substring(0,250) + '...' }}</p>
             <v-btn :to="`/product/${featured_product.id}`" color="black" dark medium depressed>
@@ -90,7 +101,7 @@
                         <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
                     </v-sheet>
 
-                    <div class="card">
+                    <div class="card" v-show="pageLoaded">
                         <div class="card-image">
                             <img :src="server_url + product.image" />
                         </div>
@@ -102,13 +113,15 @@
 
                             <div class="card-content-body">
                                 <div class="card-content-body-btns">
-                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px">
+                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px" :to="`/product/${product.idProduct}`">
                                         <i class="im im-eye" style="font-size: 13px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px" @click="saveToCart(product)">
+                                    <v-btn color="#28DF47" v-if="product.quantity > 1" dark rounded width="40px" min-width="20px" height="40px" :disabled="product.quantity < 1" @click="saveToCart(product)">
                                         <i class="im im-shopping-cart" style="font-size: 13px"></i>
                                     </v-btn>
+
+                                    <small v-else>غير متوفر</small>
                                 </div>
 
                                 <h4><span>{{ product.price }}</span> <i class="fa fa-dollar"></i> </h4>
@@ -147,7 +160,7 @@
                         <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
                     </v-sheet>
 
-                    <div class="card">
+                    <div class="card" v-show="pageLoaded">
                         <div class="card-image">
                             <img :src="server_url + product.image" />
                         </div>
@@ -159,13 +172,15 @@
 
                             <div class="card-content-body">
                                 <div class="card-content-body-btns">
-                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px">
+                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px" :to="`/product/${product.idProduct}`">
                                         <i class="im im-eye" style="font-size: 13px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px" @click="saveToCart(product)">
+                                    <v-btn color="#28DF47" v-if="product.quantity > 1" dark rounded width="40px" min-width="20px" height="40px" :disabled="product.quantity < 1" @click="saveToCart(product)">
                                         <i class="im im-shopping-cart" style="font-size: 13px"></i>
                                     </v-btn>
+
+                                    <small v-else>غير متوفر</small>
                                 </div>
 
                                 <h4><span>{{ product.price }}</span> <i class="fa fa-dollar"></i> </h4>
@@ -244,7 +259,7 @@ export default {
                 };
                 setTimeout(() => {
                     self.pageLoaded = true;
-                }, 1500)
+                }, 4500);
             }).catch(err => {
                 throw new Error(err)
             })
@@ -254,36 +269,36 @@ export default {
             let self = this;
             let products = [];
             self.axios.get('products')
-            .then(data => {
-                products = data.data.filter(product => {
-                    return Number(product.statusId) === 1
-                });
+                .then(data => {
+                    products = data.data.filter(product => {
+                        return Number(product.statusId) === 1
+                    });
 
-                self.new_products = products.splice(0, 3);
-                setTimeout(() => {
-                    self.pageLoaded = true;
-                }, 1500);
-            }).catch(err => {
-                throw new Error(err)
-            })
+                    self.new_products = products.splice(0, 3);
+                    setTimeout(() => {
+                        self.pageLoaded = true;
+                    }, 4500);
+                }).catch(err => {
+                    throw new Error(err)
+                })
         },
 
         getBestSalesProducts() {
             let self = this;
             let products = [];
             self.axios.get('products')
-            .then(data => {
-                products = data.data.filter(product => {
-                    return Number(product.statusId) === 3
-                });
+                .then(data => {
+                    products = data.data.filter(product => {
+                        return Number(product.statusId) === 3
+                    });
 
-                self.best_products = products.splice(0, 3);
-                setTimeout(() => {
-                    self.pageLoaded = true;
-                }, 1500)
-            }).catch(err => {
-                throw new Error(err)
-            })
+                    self.best_products = products.splice(0, 3);
+                    setTimeout(() => {
+                        self.pageLoaded = true;
+                    }, 4500);
+                }).catch(err => {
+                    throw new Error(err)
+                })
         },
 
         getMoreProducts() {
@@ -424,6 +439,10 @@ export default {
         align-items: center;
         background: white;
         overflow: hidden;
+
+        .v-skeleton-loader__image {
+            height: 550px !important;
+        }
 
         .image {
             background: {

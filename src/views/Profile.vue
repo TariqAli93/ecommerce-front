@@ -22,7 +22,7 @@
                     <div class="d-flex align-center justify-space-between" style="width: 100%">
                         <div class="d-flex align-center justify-center">
                             <img src="../assets/images/profile-image.svg" />
-                            <h3>Tariq Ali</h3>
+                            <h3>{{ userInfo.userName }}</h3>
                         </div>
 
                         <div>
@@ -37,7 +37,6 @@
                 <div class="banner-tabs">
                     <v-tabs v-model="profileTabs" background-color="white" style="border-bottom: 1px solid rgba(0,0,0,0.10)" color="#28DF47" left>
                         <v-tab>معلوماتي</v-tab>
-                        <v-tab>منتجاتي</v-tab>
                         <v-tab>فواتيري</v-tab>
                     </v-tabs>
 
@@ -75,37 +74,25 @@
                         </v-tab-item>
 
                         <v-tab-item>
-                            <v-row>
-                                <v-col cols="12" sm="12" md="4" lg="4" xl="4" v-for="i in 10" :key="i">
-                                    <div class="card">
-                                        <div class="card-image">
-                                            <img src="../assets/images/login.jpg" />
-                                        </div>
+                            <v-data-table :headers="headers" :items="invoices" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer @page-count="pageCount = $event" :loading="invoices.length < 1" class="elevation-0">
+                                <template v-slot:item.actions="{ item }">
+                                    <v-btn color="#28DF47" small depressed dark :to="`/invoice/${item.idInvoice}`">
+                                        <span>عرض الفاتورة</span>
+                                    </v-btn>
+                                </template>
 
-                                        <div class="card-content">
-                                            <div class="card-content-header">
-                                                <h2>اسم المنتج</h2>
-                                            </div>
+                                <template v-slot:item.discount="{ item }">
+                                    <span>{{ item.discount }} %</span>
+                                </template>
 
-                                            <div class="card-content-body">
-                                                <!-- <div class="card-content-body-btns">
-                                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px">
-                                                        <i class="im im-eye" style="font-size: 13px"></i>
-                                                    </v-btn>
+                                <template v-slot:item.tax="{ item }">
+                                    <span>{{ $store.state.tax_number }} %</span>
+                                </template>
+                            </v-data-table>
 
-                                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px">
-                                                        <i class="im im-shopping-cart" style="font-size: 13px"></i>
-                                                    </v-btn>
-                                                </div> -->
-
-                                                <h4><span>{{ i * 200 }}</span> <i class="fa fa-dollar"></i> </h4>
-
-                                                <p>{{ 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis, hic omnis rem, odio atque inventore optio, repellendus accusamus numquam similique ipsum illum tempora tenetur dolore neque doloremque? Nulla, fuga et.'.substring(0,100) + '...' }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </v-col>
-                            </v-row>
+                            <div class="text-center d-flex align-center justify-center pt-2">
+                                <v-pagination v-model="page" color="#28DF47" :length="pageCount"></v-pagination>
+                            </div>
                         </v-tab-item>
                     </v-tabs-items>
                 </div>
@@ -114,6 +101,109 @@
     </v-container>
 </div>
 </template>
+
+
+<script>
+export default {
+    data() {
+        return {
+            page: 1,
+            pageCount: 0,
+            itemsPerPage: 10,
+            breadcrumb_list: [{
+                    text: 'المتجر',
+                    disabled: false,
+                    href: '/',
+                },
+                {
+                    text: 'الملف الشخصي',
+                    disabled: true,
+                    href: '/profile',
+                }
+            ],
+            profileTabs: null,
+            headers: [{
+                    text: 'رقم الفاتورة',
+                    value: 'idUserInvoice',
+                    sortable: false
+                },
+                {
+                    text: 'اسم المنتج',
+                    value: 'productName',
+                    sortable: false
+                },
+                {
+                    text: 'السعر الكلي',
+                    value: 'totalPrice',
+                    sortable: false
+                },
+                {
+                    text: 'قسيمة الخصم',
+                    value: 'discount',
+                    sortable: false
+                },
+                {
+                    text: 'ضريبة المنتج',
+                    value: 'tax',
+                    sortable: false
+                },
+                {
+                    text: 'العرض',
+                    value: 'actions',
+                    sortable: false
+                },
+            ],
+            invoices: [],
+            invoice_id: '',
+            invoice_note: '',
+        }
+    },
+
+    methods: {
+        decodeJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        },
+    },
+
+    computed: {
+        userInfo() {
+            return this.decodeJwt(this.$store.state.token)
+        }
+    },
+
+    mounted() {
+        if (!this.$store.getters.isLoggedIn) {
+            this.$router.push({
+                path: '/'
+            })
+        }
+
+        let self = this;
+        self.axios.get(`userInvoice/${self.userInfo.id}`, {
+                headers: {
+                    Authorization: `bearer ${self.$store.state.token}`
+                }
+            })
+            .then(result => {
+                self.invoice_id = result.data.idUserInvoice;
+                self.invoice_note = result.data.note;
+                setTimeout(() => {
+                    self.invoices = result.data.products;
+                }, 1200)
+
+                console.log(result);
+            })
+            .catch(err => {
+                console.error(err.response);
+            })
+    }
+}
+</script>
 
 <style lang="scss">
 .profile-content {
@@ -302,47 +392,3 @@
     }
 }
 </style>
-
-<script>
-export default {
-    data() {
-        return {
-            breadcrumb_list: [{
-                    text: 'المتجر',
-                    disabled: false,
-                    href: '/',
-                },
-                {
-                    text: 'الملف الشخصي',
-                    disabled: true,
-                    href: '/profile',
-                }
-            ],
-            profileTabs: null,
-        }
-    },
-
-    methods: {
-        decodeJwt(token) {
-            var base64Url = token.split('.')[1];
-            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        },
-    },
-
-    computed: {
-        userInfo() {
-            return this.decodeJwt(this.$store.state.token)
-        }
-    },
-
-    mounted() {
-      if(!this.$store.getters.isLoggedIn) {
-        this.$router.push({path: '/'})
-      }
-    }
-}
-</script>

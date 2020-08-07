@@ -13,6 +13,7 @@ export default new Vuex.Store({
     token: localStorage.getItem('ACCESS_TOKEN') || sessionStorage.getItem('ACCESS_TOKEN') || null,
     username: localStorage.getItem('username') || sessionStorage.getItem('username') || null,
     cart: cart ? JSON.parse(cart) : [],
+    tax_number: 10
   },
   
   mutations: {
@@ -35,6 +36,20 @@ export default new Vuex.Store({
 
       if(itemInCart) {
         itemInCart.qty += qty
+      } else {
+        state.cart.push({product, qty});
+      }
+
+      localStorage.setItem('cart', JSON.stringify(state.cart));
+    },
+
+    ADD_PRODUCT_TO_CART(state, {product, qty}) {
+      let itemInCart = state.cart.find(item => {
+        return item.product.idProduct === product.idProduct
+      });
+
+      if(itemInCart) {
+        itemInCart.qty = qty
       } else {
         state.cart.push({product, qty});
       }
@@ -115,6 +130,8 @@ export default new Vuex.Store({
             localStorage.removeItem('ACCESS_TOKEN');
             localStorage.removeItem('username');
           }
+
+          localStorage.removeItem('coupon');
           resolve(true)
         } else {
           reject('Your Allready Logged out');

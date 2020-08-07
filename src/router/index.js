@@ -7,6 +7,7 @@ import Cart from '../views/Cart'
 import Profile from '../views/Profile'
 import Category from '../views/Category'
 import Product from '../views/Product'
+import Invoice from '../views/Invoice'
 
 Vue.use(VueRouter)
 
@@ -63,6 +64,14 @@ Vue.use(VueRouter)
     path: '/product/:id',
     name: 'product',
     component: Product,
+    meta: {
+      requiresVisitor: true
+    }
+  },
+  {
+    path: '/invoice/:id',
+    name: 'invoice',
+    component: Invoice,
     meta: {
       requiresVisitor: true
     }
