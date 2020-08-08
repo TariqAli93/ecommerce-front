@@ -38,42 +38,63 @@
     </v-main>
 
     <v-footer inset v-if="showDefaultLayout" class="footer">
-        <v-container fluid>
-            <div class="footer-inner">
-                <div class="d-flex align-center justify-center">
-                    <div style="width: 33%" class="d-flex justify-start">
-                        <v-menu offset-y top class="rounded-sm" nudge-top="10" transition="slide-y-reverse-transition">
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn color="#28DF47" block dark depressed v-bind="attrs" v-on="on">
-                                    القوائم
-                                </v-btn>
-                            </template>
-                            <v-list>
-                                <v-list-item v-for="(item, index) in navlist" :key="index">
-                                    <v-list-item-title>{{ item.text }}</v-list-item-title>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </div>
+        <div class="footer-container">
+            <div class="input">
+                <input type="text" class="subscribe-input" placeholder="اشتراك في النشرة البريدية">
+                <button class="subscribe-button">
+                    <i class="im im-check-mark"></i>
+                </button>
+            </div>
+        </div>
 
-                    <v-divider class="mx-4" vertical></v-divider>
-                    <span style="width: 33%">
-                        <address><a style="color: black">بغداد - الدورة - شارع ابو طيارة</a></address>
-                    </span>
-                    <v-divider class="mx-4" vertical></v-divider>
-                    <ul class="d-flex align-center justify-center">
-                        <li><a href="/"><i class="im im-facebook"></i></a></li>
-                        <li><a href="/"><i class="im im-twitter"></i></a></li>
-                        <li><a href="/"><i class="im im-instagram"></i></a></li>
-                        <li><a href="/"><i class="im im-snapchat"></i></a></li>
-                    </ul>
-                </div>
+        <v-divider></v-divider>
+
+        <div class="footer-container">
+            <div class="footer-item footer-item-logo">
+                <router-link tag="a" class="logo" to="/"></router-link>
+                <p class="logo-slug">
+                    مرحبا بك في المتجر العراقي للتسوق الالكتروني
+                </p>
             </div>
-            <v-divider></v-divider>
-            <div class="footer-copyright d-flex align-center justify-center pa-4">
-                <span>جميع الحقوق محفوظة <i class="fa fa-copyright" aria-hidden="true"></i></span>
+
+            <div class="footer-item">
+                <a href="#">من نحن</a>
+                <a href="#">اتصل بنا</a>
+                <a href="#">سياسة الارجاع</a>
+                <a href="#">الخصوصية</a>
+                <a href="#">سياسة الارجاع</a>
+                <a href="#">الخصوصية</a>
             </div>
-        </v-container>
+
+            <div class="footer-item">
+                <a href="#">من نحن</a>
+                <a href="#">اتصل بنا</a>
+                <a href="#">سياسة الارجاع</a>
+                <a href="#">الخصوصية</a>
+                <a href="#">سياسة الارجاع</a>
+                <a href="#">الخصوصية</a>
+            </div>
+
+            <div class="footer-item">
+                <a href="#">من نحن</a>
+                <a href="#">اتصل بنا</a>
+                <a href="#">سياسة الارجاع</a>
+                <a href="#">الخصوصية</a>
+                <a href="#">سياسة الارجاع</a>
+                <a href="#">الخصوصية</a>
+            </div>
+        </div>
+
+        <v-divider></v-divider>
+
+        <div class="footer-container">
+            <div class="footer-social">
+                <a href="#"><i class="im im-facebook"></i></a>
+                <a href="#"><i class="im im-twitter"></i></a>
+                <a href="#"><i class="im im-instagram"></i></a>
+                <a href="#"><i class="im im-snapchat"></i></a>
+            </div>
+        </div>
     </v-footer>
     <v-btn color="#28DF47" dark id="goToUpBtn" fab small fixed right bottom @click="$vuetify.goTo(0)">
         <i class="im im-arrow-up" style="font-size: 13px"></i>
@@ -95,25 +116,206 @@
     }
 }
 
-.footer-inner {
-    display: block;
-    padding: 30px 0px;
+.footer {
+    display: block !important;
+    background: #1f1f1f !important;
 
-    ul {
-        list-style: none;
+    &-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 100px;
 
-        li {
-            display: block;
+        .footer-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
             padding: 10px;
 
             a {
-                display: block;
+                display: flex;
+                color: #28DF47;
+                opacity: .5;
                 font-size: 15px;
-                color: black;
-                padding: 10px 20px;
+                width: 50px;
+                height: 50px;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                margin: 0 10px;
+                text-decoration: none;
+                transition: all 0.2s ease 0.05s;
 
                 i {
-                    color: black;
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                &:before {
+                    content: "";
+                    position: absolute;
+                    width: 50px;
+                    height: 50px;
+                    left: 0;
+                    right: 0;
+                    margin: 0 auto;
+                    background: #28DF47;
+                    top: 0;
+                    z-index: 0;
+                    border-radius: 5px;
+                    transform: scale(.6);
+                    opacity: 0;
+                    transition: all 0.2s ease 0.05s;
+                }
+
+                &:hover,
+                &:focus,
+                &:active {
+                    opacity: 1;
+                    color: white;
+
+                    &:before {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+
+        .input {
+            display: block;
+            width: 100%;
+            position: relative;
+            padding: 0 35px;
+
+            .subscribe-input {
+                width: 100%;
+                background: transparent;
+                height: 55px;
+                border: 2px solid #28df28;
+                display: block;
+                border-radius: 50px;
+                padding-right: 70px;
+                outline: none;
+                color: #28df28;
+                opacity: .5;
+                transition: all 0.2s ease 0.05s;
+
+                &:hover,
+                &:focus,
+                &:active {
+                    opacity: 1;
+                }
+                &:hover + .subscribe-button,
+                &:focus + .subscribe-button,
+                &:active + .subscribe-button {
+                    opacity: 1;
+                }
+            }
+
+            .subscribe-button {
+                position: absolute;
+                width: 40px;
+                height: 40px;
+                background: #28df28;
+                border: none;
+                outline: none;
+                box-shadow: none;
+                border-radius: 100px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: .5;
+                top: 50%;
+                right: 45px;
+                transform: translateY(-50%);
+                transition: all 0.2s ease 0.05s;
+
+                i {
+                    margin: 0;
+                    font-size: 14px;
+                    color: WHITE;
+                }
+            }
+        }
+
+        .footer-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            padding: 30px 10px;
+
+            &-logo {
+                padding: 30px;
+                opacity: .5;
+                transition: all 0.2s ease 0.05s;
+
+                .logo {
+                    background: {
+                        image: url('./assets/images/logo.png');
+                        repeat: no-repeat;
+                        size: cover;
+                        position: center;
+                    }
+
+                    ;
+                    width: 315px;
+                    height: 100px;
+                }
+
+                .logo-slug {
+                    color: #28DF47;
+                    font-weight: 900;
+                    font-size: 13px;
+                    display: block;
+                    width: 100%;
+                    text-align: center;
+                }
+
+                &:hover,
+                &:focus,
+                &:active {
+                    opacity: 1;
+                }
+            }
+
+            a:not(.logo) {
+                display: block;
+                text-align: right;
+                text-decoration: none;
+                color: #28DF47;
+                opacity: .5;
+                padding: 5px 5px;
+                position: relative;
+                min-width: 120px;
+                transition: all 0.2s ease 0.05s;
+
+                &:before {
+                    content: "";
+                    position: absolute;
+                    width: 0%;
+                    height: 2px;
+                    bottom: 0;
+                    right: 0;
+                    background: #28DF47;
+                    transition: all 0.2s ease 0.05s;
+                }
+
+                &:not(:last-child) {
+                    margin-bottom: 5px;
+                }
+
+                &:hover,
+                &:focus,
+                &:active {
+                    opacity: 1;
+
+                    &:before {
+                        width: 100%;
+                    }
                 }
             }
         }
@@ -253,7 +455,7 @@ export default {
             }
         }
     },
-    
+
     metaInfo: {
         title: 'الصفحة الرئيسية',
         titleTemplate: '%s | المتجر العراقي',
