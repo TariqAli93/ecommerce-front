@@ -1,5 +1,15 @@
 <template>
 <div class="profile-page">
+    <v-snackbar v-model="addToCartSnackbar" :color="addToCartSnackbarColor">
+        {{ addToCartSnackbarText }}
+
+        <template v-slot:action="{ attrs }">
+            <v-btn :color="addToCartSnackbarColor === 'error' ? 'secondary' : 'white'" text v-bind="attrs" @click="addToCartSnackbar = false">
+                <i class="im im-x-mark"></i>
+            </v-btn>
+        </template>
+    </v-snackbar>
+
     <div class="breadcrumbs grey lighten-4">
         <v-container>
             <v-breadcrumbs :items="breadcrumb_list">
@@ -73,35 +83,35 @@
                                 <v-list-item>
                                     <div class="d-flex align-center justify-start">
                                         <span class="pl-5">اسم المستخدم: </span>
-                                        <span>{{ userInfo.userName }}</span>
+                                        <span>{{ profileInfo.name }}</span>
                                     </div>
                                 </v-list-item>
                                 <v-divider></v-divider>
                                 <v-list-item>
                                     <div class="d-flex align-center justify-start">
                                         <span class="pl-5">رقم الهاتف: </span>
-                                        <span>{{ userInfo.phone }}</span>
+                                        <span>{{ profileInfo.phone }}</span>
                                     </div>
                                 </v-list-item>
                                 <v-divider></v-divider>
                                 <v-list-item>
                                     <div class="d-flex align-center justify-start">
                                         <span class="pl-5">البريد الالكتروني: </span>
-                                        <span>{{ userInfo.email }}</span>
+                                        <span>{{ profileInfo.email }}</span>
                                     </div>
                                 </v-list-item>
                                 <v-divider></v-divider>
                                 <v-list-item>
                                     <div class="d-flex align-center justify-start">
                                         <span class="pl-5">العنوان: </span>
-                                        <span>{{ userInfo.address }}</span>
+                                        <span>{{ profileInfo.address }}</span>
                                     </div>
                                 </v-list-item>
                             </v-list>
                         </v-tab-item>
 
                         <v-tab-item>
-                            <v-data-table :headers="headers" :items="invoices" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer @page-count="pageCount = $event" class="elevation-0">
+                            <v-data-table :headers="headers" :items.sync="invoices" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer @page-count="pageCount = $event" class="elevation-0">
                                 <template v-slot:item.actions="{ item }">
                                     <v-btn color="#28DF47" small depressed dark :to="`/invoice/${item.idInvoice}`">
                                         <span>عرض الفاتورة</span>
@@ -139,11 +149,14 @@ export default {
             updateProfileModal: false,
             valid: true,
             btn_loading: false,
-            name: '',
-            email: '',
             phone: '',
             address: '',
-            password: '',
+            profileInfo: {
+                name: '',
+                email: '',
+                address: '',
+                phone: '',
+            },
             breadcrumb_list: [{
                     text: 'المتجر',
                     disabled: false,
@@ -190,6 +203,9 @@ export default {
             invoices: [],
             invoice_id: '',
             invoice_note: '',
+            addToCartSnackbar: false,
+            addToCartSnackbarColor: '',
+            addToCartSnackbarText: '',
         }
     },
 
@@ -206,35 +222,43 @@ export default {
         update() {
             let self = this;
             self.btn_loading = true;
-            let user = {
-                name: this.userInfo.userName,
-                phone: this.userInfo.phone,
-                email: this.userInfo.email,
-                address: this.userInfo.address,
-                password: this.userInfo.password
+            let postData = {
+                phone: this.phone,
+                address: this.address
             };
 
-            console.log(user)
+            let axiosConfig = {
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    "Access-Control-Allow-Origin": "*",
+                    Authorization: `bearer ${this.$store.state.token}`
+                }
+            };
 
             let updatePromise = new Promise((resolve, reject) => {
-                self.axios.put(`user/${this.userInfo.id}`, {
-                    headers: {
-                        authorization: `bearer ${self.$store.state.token}`
-                    }
-                }, user).then(data => {
-                    resolve(data)
+                self.axios.put(`user/${this.userInfo.id}`, postData, axiosConfig).then(data => {
+                    self.getUserInfo();
+                    resolve(data);
                 }).catch(err => {
-                    reject(err.response)
+                    self.getUserInfo();
+                    reject(err.response);
                 });
             });
 
             updatePromise.then(data => {
                 setTimeout(() => {
+                    self.addToCartSnackbar = true;
+                    self.addToCartSnackbarColor = '#28DF47';
+                    self.addToCartSnackbarText = 'تم تحديث المستخدم بنجاح';
                     self.btn_loading = false;
+                    self.updateProfileModal = false;
                 }, 2000)
             }).catch(err => {
-                console.error(err);
                 setTimeout(() => {
+                    self.addToCartSnackbar = true;
+                    self.addToCartSnackbarColor = 'error';
+                    self.addToCartSnackbarText = 'خطأ في تحديث المستخدم';
+                    self.updateProfileModal = false;
                     self.btn_loading = false;
                 }, 2000)
             });
@@ -243,6 +267,31 @@ export default {
         validate() {
             this.$refs.updateProfile.validate()
         },
+
+        getUserInfo() {
+            let self = this;
+            let idUser = self.decodeJwt(self.$store.state.token).id;
+
+            self.axios.get(`user/${idUser}`, {
+                    headers: {
+                        Authorization: `bearer ${self.$store.state.token}`
+                    }
+                })
+                .then(data => {
+                    self.profileInfo = {
+                        name: data.data.name,
+                        phone: data.data.phone,
+                        address: data.data.address,
+                        email: data.data.email,
+                    }
+
+                    this.phone = data.data.phone;
+                    this.address = data.data.address;
+                })
+                .catch(err => {
+                    console.error(err.response)
+                })
+        }
     },
 
     computed: {
@@ -259,28 +308,25 @@ export default {
         }
 
         let self = this;
-
-        self.phone = this.userInfo.phone;
-        self.address = this.userInfo.address;
-        self.name = this.userInfo.userName;
-        self.email = this.userInfo.email;
-        self.password = this.userInfo.password;
-
         self.axios.get(`userInvoice/${self.userInfo.id}`, {
                 headers: {
                     Authorization: `bearer ${self.$store.state.token}`
                 }
             })
             .then(result => {
-                self.invoice_id = result.data.idUserInvoice;
-                self.invoice_note = result.data.note;
-                setTimeout(() => {
+                console.log(result.data);
+                if (result.data.products.length > 0) {
+                    self.invoice_id = result.data.idUserInvoice;
+                    self.invoice_note = result.data.note;
                     self.invoices = result.data.products;
-                }, 1200)
+                }
             })
             .catch(err => {
                 console.error(err.response);
-            })
+            });
+
+
+        this.getUserInfo();
     }
 }
 </script>
