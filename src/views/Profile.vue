@@ -15,6 +15,33 @@
         </v-container>
     </div>
 
+    <v-dialog v-model="updateProfileModal" persistent max-width="500px" transition="dialog-transition">
+        <v-card class="elevation-0 pa-0">
+            <v-toolbar dark color="#28DF47" elevation="0">
+                <v-btn icon dark @click="updateProfileModal = false">
+                    <i class="im im-x-mark"></i>
+                </v-btn>
+                <v-toolbar-title>تحديث المستخدم</v-toolbar-title>
+            </v-toolbar>
+
+            <v-form ref="updateProfile" class="pa-5" v-model="valid" lazy-validation @submit.prevent="update">
+                <v-row>
+                    <v-col cols="12">
+                        <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /^07([\d]{3})[(\D\s)]?[\d]{3}[(\D\s)]?[\d]{3}$/.test(v) || 'رقم الهاتف غير صحيح']" type="text" required v-model="phone" label="رقم الهاتف" prepend-inner-icon="fa-phone"></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12">
+                        <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required v-model="address" label="العنوان" prepend-inner-icon="fa-map-marker"></v-text-field>
+                    </v-col>
+                </v-row>
+
+                <v-btn color="#28DF47" depressed block dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
+                    تحديث
+                </v-btn>
+            </v-form>
+        </v-card>
+    </v-dialog>
+
     <v-container>
         <div class="profile-content">
             <div class="banner">
@@ -26,7 +53,7 @@
                         </div>
 
                         <div>
-                            <v-btn color="#28DF47" depressed medium dark>
+                            <v-btn color="#28DF47" depressed medium dark @click="updateProfileModal = true">
                                 <i class="im im-edit" style="font-size: 13px; margin-left: 10px"></i>
                                 <span>تحرير</span>
                             </v-btn>
@@ -74,7 +101,7 @@
                         </v-tab-item>
 
                         <v-tab-item>
-                            <v-data-table :headers="headers" :items="invoices" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer @page-count="pageCount = $event" :loading="invoices.length < 1" class="elevation-0">
+                            <v-data-table :headers="headers" :items="invoices" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer @page-count="pageCount = $event" class="elevation-0">
                                 <template v-slot:item.actions="{ item }">
                                     <v-btn color="#28DF47" small depressed dark :to="`/invoice/${item.idInvoice}`">
                                         <span>عرض الفاتورة</span>
@@ -102,7 +129,6 @@
 </div>
 </template>
 
-
 <script>
 export default {
     data() {
@@ -110,6 +136,14 @@ export default {
             page: 1,
             pageCount: 0,
             itemsPerPage: 10,
+            updateProfileModal: false,
+            valid: true,
+            btn_loading: false,
+            name: '',
+            email: '',
+            phone: '',
+            address: '',
+            password: '',
             breadcrumb_list: [{
                     text: 'المتجر',
                     disabled: false,
@@ -168,6 +202,47 @@ export default {
             }).join(''));
             return JSON.parse(jsonPayload);
         },
+
+        update() {
+            let self = this;
+            self.btn_loading = true;
+            let user = {
+                name: this.userInfo.userName,
+                phone: this.userInfo.phone,
+                email: this.userInfo.email,
+                address: this.userInfo.address,
+                password: this.userInfo.password
+            };
+
+            console.log(user)
+
+            let updatePromise = new Promise((resolve, reject) => {
+                self.axios.put(`user/${this.userInfo.id}`, {
+                    headers: {
+                        authorization: `bearer ${self.$store.state.token}`
+                    }
+                }, user).then(data => {
+                    resolve(data)
+                }).catch(err => {
+                    reject(err.response)
+                });
+            });
+
+            updatePromise.then(data => {
+                setTimeout(() => {
+                    self.btn_loading = false;
+                }, 2000)
+            }).catch(err => {
+                console.error(err);
+                setTimeout(() => {
+                    self.btn_loading = false;
+                }, 2000)
+            });
+        },
+
+        validate() {
+            this.$refs.updateProfile.validate()
+        },
     },
 
     computed: {
@@ -184,6 +259,13 @@ export default {
         }
 
         let self = this;
+
+        self.phone = this.userInfo.phone;
+        self.address = this.userInfo.address;
+        self.name = this.userInfo.userName;
+        self.email = this.userInfo.email;
+        self.password = this.userInfo.password;
+
         self.axios.get(`userInvoice/${self.userInfo.id}`, {
                 headers: {
                     Authorization: `bearer ${self.$store.state.token}`
@@ -195,8 +277,6 @@ export default {
                 setTimeout(() => {
                     self.invoices = result.data.products;
                 }, 1200)
-
-                console.log(result);
             })
             .catch(err => {
                 console.error(err.response);

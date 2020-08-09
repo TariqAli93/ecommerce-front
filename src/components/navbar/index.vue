@@ -1,5 +1,9 @@
 <template>
-<div class="navbar">
+<div class="navbar-wrapper">
+    <v-snackbar v-model="logoutSnackBar" style="z-index: 5600" color="#28DF47" absolute app dark bottom centered>
+        {{ logoutMessage }}
+    </v-snackbar>
+
     <v-dialog v-model="dialog_logout" max-width="300" persistent origin="top top" transition="slide-y-transition">
         <v-card>
             <v-card-title class="headline pb-4">
@@ -24,72 +28,116 @@
         </v-card>
     </v-dialog>
 
-    <div class="top">
-        <div class="right-wrapper">
-            <v-btn v-for="btn in social_media" :key="btn.id" icon :color="btn.color" medium>
-                <i style="font-size: 14px" :class="`im im-${btn.icon}`"></i>
-            </v-btn>
-        </div>
+    <div class="navbar">
+        <div class="top">
+            <div class="right-wrapper">
+                <v-btn v-for="btn in social_media" :key="btn.id" icon :color="btn.color" medium>
+                    <i style="font-size: 14px" :class="`im im-${btn.icon}`"></i>
+                </v-btn>
+            </div>
 
-        <div class="middle-wrapper">
-            <div class="search-container">
-                <v-autocomplete clearable dense :cache-items="false" v-model="navbar_search" :loading="search_loading" :items="search_items" :search-input.sync="search_input" item-text="productName" item-value="idProduct" hide-details label="هل تبحث عن منتج ؟" color="#28DF47" solo-inverted @change="gotToProduct(navbar_search)" flat>
-                </v-autocomplete>
+            <div class="middle-wrapper">
+                <div class="search-container">
+                    <v-autocomplete clearable dense :cache-items="false" v-model="navbar_search" :loading="search_loading" :items="search_items" :search-input.sync="search_input" item-text="productName" item-value="idProduct" hide-details label="هل تبحث عن منتج ؟" color="#28DF47" solo-inverted @change="gotToProduct(navbar_search)" flat>
+                    </v-autocomplete>
+                </div>
+            </div>
+
+            <div class="left-wrapper">
+                <div class="shopping-btn">
+                    <v-btn color="#28DF47" dark depressed medium @click="$store.state.sidebar = true">
+                        <i style="font-size: 14px; margin-left: 10px" class="im im-shopping-cart"></i>
+                        <span>سلة المشتريات</span>
+                        <div class="badge-number elevation-2">
+                            <small>{{ $store.getters.product_count }}</small>
+                        </div>
+                    </v-btn>
+                </div>
             </div>
         </div>
 
-        <div class="left-wrapper">
-            <div class="shopping-btn">
-                <v-btn color="#28DF47" dark depressed medium @click="$store.state.sidebar = true">
-                    <i style="font-size: 14px; margin-left: 10px" class="im im-shopping-cart"></i>
-                    <span>سلة المشتريات</span>
-                    <div class="badge-number elevation-2">
-                        <small>{{ $store.getters.product_count }}</small>
-                    </div>
-                </v-btn>
+        <div class="divider"></div>
+
+        <div class="bottom">
+            <div class="logo">
+                <router-link to="/">
+                    <img src="../../assets/images/logo.png" alt="المتجر العراقي">
+                </router-link>
+            </div>
+
+            <div class="d-flex align-center justify-center navlist-left">
+                <ul class="navlist">
+                    <li>
+                        <router-link tag="a" to="/" exact-active-class="active" exact>
+                            الرئيسية
+                        </router-link>
+                    </li>
+                    <li v-for="category in categories" :key="category.idCategory" class="order-1">
+                        <router-link tag="a" :to="`/category/${category.idCategory}`" exact-active-class="active" exact>
+                            {{ category.categoryName }}
+                        </router-link>
+                    </li>
+
+                    <v-menu color="#28DF47" open-on-hover left transition="slide-y-transition" bottom v-if="categories.length < 7">
+                        <template v-slot:activator="{ on, attrs }">
+                            <li class="navlist-li order-2">
+                                <a v-bind="attrs" v-on="on" exact-active-class="active" exact>
+                                    المزيد
+                                </a>
+                            </li>
+                        </template>
+
+                        <v-list nav color="#28DF47" dark>
+                            <v-list-item v-for="category in categoriesNotInList" :key="category.idCategory" :to="`/category/${category.idCategory}`">
+                                <v-list-item-title color="#28DF47">{{ category.categoryName }}</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </ul>
+
+                <div>
+                    <v-menu v-if="$store.getters.isLoggedIn" color="#28DF47" left open-on-hover transition="slide-y-transition" bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn color="#28DF47" height="60px" depressed medium dark v-bind="attrs" v-on="on">
+                                <i class="im im-user-circle ml-3"></i>
+                                {{ username }}
+                            </v-btn>
+                        </template>
+                        <v-list color="#28DF47" dark>
+                            <v-list-item to="/profile">
+                                <v-list-item-title><i class="fa fa-user-circle ml-3"></i> الملف الشخصي</v-list-item-title>
+                            </v-list-item>
+                            <v-divider></v-divider>
+                            <v-list-item @click="dialog_logout = true">
+                                <v-list-item-title><i class="fa fa-sign-out ml-3"></i> تسجيل الخروج</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+
+                    <v-btn v-else color="#28DF47" to="/login" width="60px" height="60px" depressed medium dark>
+                        <i class="im im-user-male"></i>
+                    </v-btn>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="divider"></div>
-
-    <div class="bottom">
-        <div class="logo">
-            <router-link to="/">
-                <img src="../../assets/images/logo.png" alt="المتجر العراقي">
+    <div class="mobile-navbar">
+        <v-toolbar color="transparent" dense flat>
+            <router-link to="/" class="mobile-logo align-center text--primary">
+                <v-img src="../../assets/images/mobile-logo.png"></v-img>
             </router-link>
-        </div>
 
-        <div>
-            <ul class="navlist">
-                <li>
-                    <router-link tag="a" to="/" exact-active-class="active" exact>
-                        الرئيسية
-                    </router-link>
-                </li>
-                <li v-for="category in categories" :key="category.idCategory" class="order-1">
-                    <router-link tag="a" :to="`/category/${category.idCategory}`" exact-active-class="active" exact>
-                        {{ category.categoryName }}
-                    </router-link>
-                </li>
+            <v-spacer></v-spacer>
 
-                <v-menu color="#28DF47" open-on-hover left transition="slide-y-transition" bottom v-if="categories.length < 7">
-                    <template v-slot:activator="{ on, attrs }">
-                        <li class="navlist-li order-2">
-                            <a v-bind="attrs" v-on="on" exact-active-class="active" exact>
-                                المزيد
-                            </a>
-                        </li>
-                    </template>
+            <div class="v-responsive mr-auto mr-md-4 transition-swing" v-show="mobileSearch">
+                <v-autocomplete clearable dense :cache-items="false" v-model="navbar_search" :loading="search_loading" :items="search_items" :search-input.sync="search_input" item-text="productName" item-value="idProduct" hide-details label="هل تبحث عن منتج ؟" color="#28DF47" solo-inverted @change="gotToProduct(navbar_search)" flat>
+                </v-autocomplete>
+            </div>
 
-                    <v-list nav color="#28DF47" dark>
-                        <v-list-item v-for="category in categoriesNotInList" :key="category.idCategory" :to="`/category/${category.idCategory}`">
-                            <v-list-item-title color="#28DF47">{{ category.categoryName }}</v-list-item-title>
-                        </v-list-item>
-                    </v-list>
-                </v-menu>
-
-                <v-menu v-if="$store.getters.isLoggedIn" color="#28DF47" left open-on-hover transition="slide-y-transition" bottom>
+            <div class="mobile-icons">
+                <!-- login -->
+                <v-menu v-if="$store.getters.isLoggedIn" color="#28DF47" left transition="slide-y-transition" bottom>
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn color="#28DF47" height="60px" depressed medium dark v-bind="attrs" v-on="on">
                             <i class="im im-user-circle ml-3"></i>
@@ -107,17 +155,38 @@
                     </v-list>
                 </v-menu>
 
-                <v-btn v-else color="#28DF47" to="/login" width="60px" height="60px" depressed medium dark>
-                    <i class="im im-user-male"></i>
+                <v-btn dark icon color="#28DF47" v-else to="/login">
+                    <i class="im im-user-circle" style="font-size: 15px"></i>
                 </v-btn>
-            </ul>
-        </div>
-    </div>
 
-    <div class="search-overlay" v-show="overlay"></div>
-    <v-snackbar v-model="logoutSnackBar" style="z-index: 5600" color="#28DF47" absolute app dark bottom centered>
-        {{ logoutMessage }}
-    </v-snackbar>
+                <!-- shopping cart -->
+                <v-badge bordered top color="#28DF47" :value="$store.getters.product_count" dot offset-x="10" offset-y="10">
+                    <v-btn dark icon color="#28DF47" @click="$store.state.sidebar = true">
+                        <i class="im im-shopping-cart" style="font-size: 15px"></i>
+                    </v-btn>
+                </v-badge>
+
+                <!-- search -->
+                <v-btn dark icon color="#28DF47" @click="mobileSearch = !mobileSearch">
+                    <i class="im im-magnifier" style="font-size: 15px"></i>
+                </v-btn>
+
+                <!-- menu -->
+                <v-menu color="#28DF47" left transition="slide-y-transition" bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn color="#28DF47" icon depressed dark v-bind="attrs" v-on="on">
+                            <i class="im im-menu-dot-v" style="font-size: 15px"></i>
+                        </v-btn>
+                    </template>
+                    <v-list nav dense color="#28DF47" dark>
+                        <v-list-item v-for="category in categories.concat(categoriesNotInList)" :key="category.idCategory" :to="`/category/${category.idCategory}`">
+                            <v-list-item-title>{{ category.categoryName }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </div>
+        </v-toolbar>
+    </div>
 </div>
 </template>
 
@@ -135,6 +204,7 @@ export default {
             search_products: [],
             search_input: null,
             dialog_logout: false,
+            mobileSearch: false,
             dialog_logout_accept_loading: false,
             categories: [],
             categoriesNotInList: [],
@@ -238,7 +308,12 @@ export default {
                 this.dialog_logout_accept_loading = false;
                 this.dialog_logout = false;
                 this.logoutSnackBar = true;
-                this.logoutMessage = 'تم تسجيل الخروج بنجاح'
+                this.logoutMessage = 'تم تسجيل الخروج بنجاح';
+                setTimeout(() => {
+                    this.$router.push({
+                        name: 'home'
+                    });
+                }, 1200);
             }, 1000)
         },
     }
@@ -246,9 +321,40 @@ export default {
 </script>
 
 <style lang="scss">
+.navbar-wrapper {
+    width: 100%;
+}
+
+.mobile-navbar {
+    height: auto !important;
+
+    .v-toolbar {
+        height: auto !important;
+        padding: 10px 10px;
+    }
+
+    .mobile-logo {
+        display: block;
+    }
+}
+
+@media (min-width: 1161px) {
+    .mobile-navbar {
+        display: none;
+    }
+}
+
 .navbar {
     width: 100%;
     margin: 0 auto;
+
+    @media (max-width: 1250px) {
+        padding: 0 20px;
+    }
+
+    @media (max-width: 1161px) {
+        display: none;
+    }
 
     .top {
         display: flex;
@@ -259,10 +365,18 @@ export default {
         margin: 0 auto;
         position: relative;
 
+        @media (max-width: 1250px) {
+            width: 100%;
+        }
+
         .left-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
+
+            @media (max-width: 1161px) {
+                width: 100%;
+            }
 
             .shopping-btn {
                 position: relative;
@@ -345,6 +459,10 @@ export default {
         width: 1250px;
         margin: 0 auto;
 
+        @media (max-width: 1250px) {
+            width: 100%;
+        }
+
         .logo {
             display: block;
 
@@ -414,11 +532,11 @@ export default {
                     }
                 }
             }
+        }
 
-            .v-btn {
-                margin-right: 15px;
-                order: 2;
-            }
+        .v-btn {
+            margin-right: 15px;
+            order: 2;
         }
     }
 }

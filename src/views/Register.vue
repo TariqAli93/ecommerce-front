@@ -2,34 +2,12 @@
 <div class="register-page">
     <v-snackbar v-model="snackbar" :color="color" top>
         {{ message }}
-
         <template v-slot:action="{ attrs }">
             <v-btn color="secondary" icon v-bind="attrs" @click="snackbar = false">
                 <i style="font-size: 14px" class="im im-x-mark"></i>
             </v-btn>
         </template>
     </v-snackbar>
-    <v-dialog v-model="dialog" max-width="650px" origin="center center" persistent>
-        <v-card class="pa-0" style="overflow: auto">
-            <v-system-bar class="pa-5" height="70px" color="secondary" dark>
-                <v-btn color="secondary" fab small @click="dialog = false">
-                    <i class="im im-x-mark"></i>
-                </v-btn>
-            </v-system-bar>
-
-            <v-form ref="login" class="pa-4" v-model="valid" lazy-validation @submit.prevent="login">
-                <v-row>
-                    <v-col cols="12">
-                        <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /.+@.+\..+/.test(v) || 'ايميل غير صحيح']" type="email" required autocomplete="off" v-model="resetEmail" label="البريد الالكتروني" prepend-inner-icon="fa-envelope"></v-text-field>
-                    </v-col>
-                </v-row>
-
-                <v-btn color="#28DF47" :disabled="!valid" width="200px" depressed large class="mx-auto" block type="submit">
-                    اعادة تعين
-                </v-btn>
-            </v-form>
-        </v-card>
-    </v-dialog>
     <div class="parts">
         <div class="part w-30">
             <div class="form">
@@ -37,7 +15,7 @@
                     <i class="im im-home"></i>
                 </v-btn>
                 <div class="logo"></div>
-                <v-form ref="login" v-model="valid" lazy-validation @submit.prevent="login">
+                <v-form ref="register" v-model="valid" lazy-validation @submit.prevent="register">
                     <v-row>
                         <v-col cols="12">
                             <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required autocomplete="off" v-model="username" label="اسم المستخدم" prepend-inner-icon="fa-user"></v-text-field>
@@ -46,9 +24,17 @@
                         <v-col cols="12">
                             <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="password" required v-model="password" label="كلمة المرور" prepend-inner-icon="fa-lock"></v-text-field>
                         </v-col>
-                        
+
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="password" required v-model="email" label="البريد الالكتروني" prepend-inner-icon="fa-envelope"></v-text-field>
+                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /.+@.+\..+/.test(v) || 'البريد الالكتروني غير صحيح']" type="email" required v-model="email" label="البريد الالكتروني" prepend-inner-icon="fa-envelope"></v-text-field>
+                        </v-col>
+
+                        <v-col cols="12">
+                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /^07([\d]{3})[(\D\s)]?[\d]{3}[(\D\s)]?[\d]{3}$/.test(v) || 'رقم الهاتف غير صحيح']" type="text" required v-model="phone" label="رقم الهاتف" prepend-inner-icon="fa-phone"></v-text-field>
+                        </v-col>
+
+                        <v-col cols="12">
+                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required v-model="address" label="العنوان" prepend-inner-icon="fa-map-marker"></v-text-field>
                         </v-col>
                     </v-row>
 
@@ -81,9 +67,10 @@ export default {
             username: '',
             password: '',
             email: '',
+            phone: '',
+            address: '',
             resetEmail: '',
             valid: true,
-            dialog: false,
             message: '',
             color: '',
             snackbar: false,
@@ -106,45 +93,66 @@ export default {
     },
 
     methods: {
-        login() {
-            this.btn_loading = true;
+        register() {
+            let self = this;
             let user = {
-                userName: this.username,
-                password: this.password
-            };
+                name: self.username,
+                password: self.password,
+                email: self.email,
+                phone: self.phone,
+                address: self.address
+            }
+            self.btn_loading = true;
 
-            if (this.$refs.login.validate()) {
-                setTimeout(() => {
-                    this.$store.dispatch('loginProccess', user)
-                        .then((result) => {
-                            this.snackbar = true;
-                            this.color = '#28DF47';
-                            this.message = `مرحبا بك ${user.userName}` + ' تم تسجيل الدخول بنجاح'
-                            this.btn_loading = false;
-                            localStorage.setItem('username', user.userName);
-                            if (this.$store.state.token !== null) {
-                                this.$router.push({
-                                    name: 'home'
-                                });
-                            }
-                        }).catch((err) => {
-                            this.snackbar = true;
-                            this.color = 'error';
-                            this.message = err.response.data.message;
-                            this.btn_loading = false;
+            if (this.$refs.register.validate()) {
+                let registerPromise = new Promise((resolve, reject) => {
+                    self.axios.post('addUser', user)
+                        .then(data => {
+                            resolve(data)
+                        }).catch(err => {
+                            reject(err.response);
                         });
-                }, 2000)
+                });
 
+                registerPromise.then(data => {
+                    self.snackbar = true;
+                    self.color = '#28DF47';
+                    self.message = 'تم انشاء الحساب بنجاح - سيتم توجيهك الى تسجيل الدخول';
+
+                    setTimeout(() => {
+                        self.btn_loading = false;
+                    }, 1500)
+
+                    setTimeout(() => {
+                        self.$router.push({
+                            name: 'login'
+                        });
+                    }, 2000);
+                }).catch(err => {
+                    if (err.data.errCode === 'ER_DUP_ENTRY') {
+                        self.snackbar = true;
+                        self.color = 'error';
+                        self.message = 'هذا المستخدم محجوز مسبقا';
+
+                        setTimeout(() => {
+                            self.btn_loading = false;
+                        }, 1500)
+                    } else {
+                        self.snackbar = true;
+                        self.color = 'error';
+                        self.message = 'خطأ في انشاء الحساب';
+                        setTimeout(() => {
+                            self.btn_loading = false;
+                        }, 1500)
+                    }
+                })
             } else {
-                this.snackbar = true;
-                this.color = 'error';
-                this.message = 'كل الحقول مطلوبة'
-                this.btn_loading = false;
+                self.btn_loading = false;
             }
         },
 
         validate() {
-            this.$refs.login.validate()
+            this.$refs.register.validate()
         },
     },
 }
@@ -216,9 +224,9 @@ export default {
 
                     ;
                     width: 100%;
-                    height: 150px;
+                    height: 100px;
                     display: block;
-                    margin: 0 0 30px 0;
+                    margin: 0 0 10px 0;
                 }
 
                 form {

@@ -12,7 +12,8 @@
 
     <v-carousel class="custom-carousel" show-arrows delimiter-icon="fa-minus" next-icon="fa-long-arrow-right" prev-icon="fa-long-arrow-left" hide-delimiter-background show-arrows-on-hover>
         <v-carousel-item v-for="i in products" :key="i.idProduct">
-            <img :src="server_url + i.image">
+            <!-- <img :src="server_url + i.image"> -->
+            <v-img :src="server_url + i.image"></v-img>
         </v-carousel-item>
     </v-carousel>
 
@@ -22,7 +23,7 @@
         </div>
         <v-container fluid>
             <v-row v-if="!pageLoaded">
-                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="i in 3" :key="i">
+                <v-col cols="12" xl="4" lg="4" md="12" sm="12" v-for="i in 3" :key="i">
                     <v-sheet>
                         <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
                     </v-sheet>
@@ -30,7 +31,7 @@
             </v-row>
 
             <v-row v-else>
-                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="product in new_products" :key="product.idProduct">
+                <v-col cols="12" xl="4" lg="4" md="12" sm="12" v-for="product in new_products" :key="product.idProduct">
                     <div class="card" v-show="pageLoaded">
                         <div class="card-image">
                             <img :src="server_url + product.image" />
@@ -96,7 +97,7 @@
         </div>
         <v-container fluid>
             <v-row>
-                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="product in best_products" :key="product.idProduct">
+                <v-col cols="12" xl="4" lg="4" md="12" sm="12" v-for="product in best_products" :key="product.idProduct">
                     <v-sheet v-if="!pageLoaded">
                         <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
                     </v-sheet>
@@ -155,7 +156,7 @@
         </div>
         <v-container fluid>
             <v-row>
-                <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="(product, index) in products" :key="index">
+                <v-col cols="12" xl="4" lg="4" md="12" sm="12" v-for="(product, index) in products" :key="index">
                     <v-sheet v-if="!pageLoaded" color="grey lighten-4">
                         <v-skeleton-loader class="mx-auto" type="card-avatar, article, actions"></v-skeleton-loader>
                     </v-sheet>
@@ -324,6 +325,10 @@ export default {
 .v-main {
     &.is-padding {
         padding-top: 160px !important;
+
+        @media (max-width: 1161px) {
+            padding-top: 87px !important;
+        }
     }
 }
 
@@ -673,6 +678,10 @@ export default {
         display: block;
         padding: 30px 3rem;
         background: white;
+
+        @media (max-width: 1161px) {
+            padding: 30px .7rem;
+        }
 
         .title {
             position: relative;

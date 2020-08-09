@@ -158,7 +158,7 @@ export default {
 
 <style lang="scss">
 .product-page {
-    padding: 20px 0px;
+    padding: 0px;
 
     .product-control {
         h3 {
@@ -177,15 +177,10 @@ export default {
                 margin-bottom: 20px;
             }
         }
-
-        // input
-        // list
-        // btns
-
     }
 
     .custom-carousel {
-        height: 500px !important;
+        height: 491px !important;
 
         .v-responsive__content {
             height: 100%;

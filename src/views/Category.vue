@@ -33,7 +33,7 @@
         </v-container>
     </div>
     <div v-else>
-        <v-container fluid>
+        <v-container>
             <v-row>
                 <v-col cols="12" xl="4" lg="4" md="4" sm="1" v-for="(product, index) in products" :key="index">
                     <v-sheet v-if="!pageLoaded">
