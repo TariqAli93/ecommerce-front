@@ -417,6 +417,7 @@
 <script>
 import navbar from '@/components/navbar/'
 import sidecart from '@/components/sidecart'
+
 export default {
     name: 'App',
     components: {
@@ -432,6 +433,7 @@ export default {
             mobileVersion: '',
             androidPhone: false,
             iosPhone: false,
+            app_info: {},
             navlist: [{
                     to: '/',
                     text: 'الرئيسية'
@@ -465,6 +467,10 @@ export default {
 
         totalPrice() {
             return this.$store.getters.totalPrice;
+        },
+
+        appinfo() {
+            return this.app_info;
         }
     },
 
@@ -476,6 +482,16 @@ export default {
         window.addEventListener('scroll', event => {
             this.goUpBtn();
         });
+
+        this.axios.get('settings')
+        .then(data => {
+            this.app_info = data.data[0];
+        })
+        .catch(err => {
+            console.error(err)
+        });
+
+        console.log(this.appinfo)
     },
 
     watch: {

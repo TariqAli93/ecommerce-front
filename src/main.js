@@ -17,8 +17,6 @@ axios.defaults.headers.common['Authorization'] = '';
 
 Vue.config.productionTip = false
 
-
-
 new Vue({
   router,
   store,

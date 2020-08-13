@@ -140,7 +140,7 @@
         </v-container>
     </section>
 
-    <section class="parallax">
+    <!-- <section class="parallax">
         <div class="content d-flex align-center justify-center flex-column" style="height: 100%">
             <h1>خليك بالبيت</h1>
             <P>المتجر العراقي يوفر لك احتياجاتك بدون متروح للسوق و توصيل مجانا لحد باب البيت انته اطلب و احنه انفذ</P>
@@ -148,7 +148,7 @@
                 اطلب الان
             </v-btn>
         </div>
-    </section>
+    </section> -->
 
     <section class="section">
         <div class="title">
@@ -238,6 +238,7 @@ export default {
     methods: {
         saveToCart(product) {
             this.addToCartSnackbar = false;
+            
             this.$store.dispatch('additemToCart', {
                 product: product,
                 qty: 1

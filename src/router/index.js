@@ -8,6 +8,7 @@ import Profile from '../views/Profile'
 import Category from '../views/Category'
 import Product from '../views/Product'
 import Invoice from '../views/Invoice'
+import Verify from '../views/Verify'
 
 Vue.use(VueRouter)
 
@@ -72,6 +73,14 @@ Vue.use(VueRouter)
     path: '/invoice/:id',
     name: 'invoice',
     component: Invoice,
+    meta: {
+      requiresVisitor: true
+    }
+  },
+  {
+    path: '/verify/:code',
+    name: 'verify',
+    component: Verify,
     meta: {
       requiresVisitor: true
     }

@@ -13,7 +13,7 @@ export default new Vuex.Store({
     token: localStorage.getItem('ACCESS_TOKEN') || sessionStorage.getItem('ACCESS_TOKEN') || null,
     username: localStorage.getItem('username') || sessionStorage.getItem('username') || null,
     cart: cart ? JSON.parse(cart) : [],
-    tax_number: 10
+    tax_number: 0,
   },
   
   mutations: {
@@ -35,11 +35,12 @@ export default new Vuex.Store({
       });
 
       if(itemInCart) {
-        itemInCart.qty += qty
-      } else {
+        window.alert('هذا العنصر موجود مسبقا');
+      }
+      else {
         state.cart.push({product, qty});
       }
-
+ 
       localStorage.setItem('cart', JSON.stringify(state.cart));
     },
 
@@ -49,7 +50,7 @@ export default new Vuex.Store({
       });
 
       if(itemInCart) {
-        itemInCart.qty = qty
+        window.alert('هذا العنصر موجود مسبقا');
       } else {
         state.cart.push({product, qty});
       }
@@ -63,7 +64,21 @@ export default new Vuex.Store({
     },
 
     INCRES_QTY(state, index) {
-      state.cart[index].qty++
+      axios.get('products')
+      .then(data => {
+        let thisItem = data.data.filter(product => {
+          return product.idProduct === state.cart[index].product.idProduct
+        });
+
+        if(state.cart[index].qty >= thisItem[0].quantity) {
+          state.cart[index].qty = state.cart[index].qty;
+          window.alert('لقد استفنذت الكمية')
+        } else {
+          state.cart[index].qty++;
+        }
+      }).catch(err => {
+        console.error(err)
+      });
       localStorage.setItem('cart', JSON.stringify(state.cart));
     },
 

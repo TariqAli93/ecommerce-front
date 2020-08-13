@@ -20,6 +20,24 @@
             <template v-slot:item.qty="{ item }">
                 {{ (item.totalPrice / item.price).toFixed(0) }}
             </template>
+            
+            <template v-slot:item.price="{ item }">
+                <strong>{{ item.price.toFixed(1) }} دولار</strong>
+            </template>
+            
+            <template v-slot:item.totalPrice="{ item }">
+                <strong>{{ item.totalPrice.toFixed(1) }} دولار</strong>
+            </template>
+            
+            <template v-slot:item.discount="{ item }">
+                <strong>{{ item.discount.toFixed(0) }} %</strong>
+            </template>
+            
+            <template v-slot:footer>
+                <v-card elevation="0" class="pa-5 grey lighten-3 mt-3" tile>
+                    <span><strong>المجموع:</strong>  <strong>{{ totalAllPrices.reduce((a, b) => a + b).toFixed(0) }}</strong> <strong>دولار</strong></span>
+                </v-card>
+            </template>
         </v-data-table>
     </v-container>
 </div>
@@ -32,6 +50,7 @@ export default {
             products: [],
             invoice_id: '',
             quantity: '',
+            totalAllPrices: [],
             breadcrumb_list: [{
                     text: 'المتجر',
                     disabled: false,
@@ -54,13 +73,13 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'الكمية',
-                    value: 'qty',
+                    text: 'سعر المنتج',
+                    value: 'price',
                     sortable: false,
                 },
                 {
-                    text: 'سعر المنتج',
-                    value: 'price',
+                    text: 'الكمية',
+                    value: 'qty',
                     sortable: false,
                 },
                 {
@@ -86,6 +105,17 @@ export default {
             }).join(''));
             return JSON.parse(jsonPayload);
         },
+
+        log(t) {
+            console.log(t);
+        } ,
+
+        countingPrice(product) {
+            let arr = [];
+            let total = '';
+            arr.push(product);
+            console.log(arr);
+        }
     },
 
     mounted() {
@@ -102,6 +132,11 @@ export default {
         })
         .then(result => {
             self.products = result.data.products;
+            setTimeout(() => {
+                for(let prod in self.products) {
+                    self.totalAllPrices.push(self.products[prod].totalPrice);
+                }
+            }, 0);
         }).catch((err) => {
             console.error(err)
         });

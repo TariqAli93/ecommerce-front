@@ -156,7 +156,7 @@ export default {
             addToCartSnackbar: false,
             addToCartSnackbarText: '',
             addToCartSnackbarColor: '',
-            tax_number: 10,
+            tax_number: 0,
             breadcrumb_list: [{
                     text: 'المتجر',
                     disabled: false,
@@ -203,12 +203,10 @@ export default {
 
         incresQty(index) {
             this.$store.dispatch('countUpQty', index)
-            console.log(index);
         },
 
         decresQty(index) {
             this.$store.dispatch('countDownQty', index)
-            console.log(index);
         },
 
         startSnackBar(text, color) {
@@ -239,9 +237,7 @@ export default {
 
                                 self.axios.put(`couponStatus/${data.data.idCoupon}`, {
                                     status: 1
-                                }).then(result => {
-                                    console.log(result.data)
-                                }).catch(err => {
+                                }).then(result => {}).catch(err => {
                                     console.error(err.response)
                                 })
                             }, 1400)
@@ -269,48 +265,50 @@ export default {
             let itemprice = '';
             let itemPlusQty = '';
 
-            let stateCart = self.$store.state.cart.forEach(item => {
-                percent = Math.floor((item.product.price * item.qty) / 100 * coupon);
-                pricetax = Math.floor((item.product.price * item.qty) / 100 * self.tax_number);
-                itemPlusQty = Math.floor(item.product.price * item.qty);
-                itemprice = Math.floor(itemPlusQty + pricetax);
+            if (self.payment) {
+                let stateCart = self.$store.state.cart.forEach(item => {
+                    percent = Math.floor((item.product.price * item.qty) / 100 * coupon);
+                    pricetax = Math.floor((item.product.price * item.qty) / 100 * self.tax_number);
+                    itemPlusQty = Math.floor(item.product.price * item.qty);
+                    itemprice = Math.floor(itemPlusQty + pricetax);
 
-                products.push({
-                    productId: item.product.idProduct,
-                    quantity: item.qty,
-                    discount: coupon,
-                    totalPrice: Math.floor(itemprice - percent)
+                    products.push({
+                        productId: item.product.idProduct,
+                        quantity: item.qty,
+                        discount: coupon,
+                        totalPrice: Math.floor(itemprice - percent)
+                    });
                 });
-            });
 
-            self.axios.post('addMultiInvoice', {
-                userId: userId,
-                note: self.payment_note,
-                products: products,
+                self.axios.post('addMultiInvoice', {
+                    userId: userId,
+                    note: self.payment_note,
+                    products: products,
 
-            }, {
-                headers: {
-                    Authorization: `bearer ${self.$store.state.token}`
-                }
-            }).then(result => {
-                self.loading_screen = true;
-                console.log(result)
-                setTimeout(() => {
-                    self.startSnackBar('تم الشراء بنجاح . شكرا لكم', '#28DF47');
-                    self.loading_screen = false;
+                }, {
+                    headers: {
+                        Authorization: `bearer ${self.$store.state.token}`
+                    }
+                }).then(result => {
+                    self.loading_screen = true;
                     setTimeout(() => {
-                        localStorage.removeItem('coupon');
-                        localStorage.removeItem('cart');
-                        self.$store.state.cart = [];
-                        self.$router.push({
-                            name: 'profile'
-                        });
-                    }, 1500)
-                }, 2400);
-            }).catch(err => {
-                self.loading_screen = false;
-                console.error(err.response)
-            });
+                        self.startSnackBar('تم الشراء بنجاح . شكرا لكم', '#28DF47');
+                        self.loading_screen = false;
+                        setTimeout(() => {
+                            localStorage.removeItem('coupon');
+                            localStorage.removeItem('cart');
+                            self.$store.state.cart = [];
+                            self.$router.push({
+                                name: 'profile'
+                            });
+                        }, 1500)
+                    }, 2400);
+                }).catch(err => {
+                    self.loading_screen = false;
+                    console.error(err.response)
+                });
+
+            }
         }
     },
     mounted() {
