@@ -62,6 +62,29 @@
 
 <script>
 export default {
+    metaInfo: {
+        title: 'انشاء الحسابات',
+        titleTemplate: '%s | المتجر العراقي',
+        htmlAttrs: {
+            lang: 'ar',
+            amp: true
+        },
+        bodyAttrs: {
+            class: ['body']
+        },
+        meta: [{
+                charset: 'utf-8'
+            },
+            {
+                name: 'description',
+                content: 'foo'
+            },
+            {
+                name: 'viewport',
+                content: 'width=device-width, initial-scale=1'
+            }
+        ],
+    },
     data() {
         return {
             username: '',

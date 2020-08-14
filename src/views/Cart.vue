@@ -316,7 +316,31 @@ export default {
         if (this.$store.getters.isLoggedIn !== true) {
             this.$router.push('/login')
         }
-    }
+    },
+
+    metaInfo: {
+        title: 'سلة المشتريات',
+        titleTemplate: '%s | المتجر العراقي',
+        htmlAttrs: {
+            lang: 'ar',
+            amp: true
+        },
+        bodyAttrs: {
+            class: ['body']
+        },
+        meta: [{
+                charset: 'utf-8'
+            },
+            {
+                name: 'description',
+                content: 'foo'
+            },
+            {
+                name: 'viewport',
+                content: 'width=device-width, initial-scale=1'
+            }
+        ],
+    },
 }
 </script>
 

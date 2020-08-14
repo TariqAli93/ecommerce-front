@@ -75,30 +75,21 @@
             </div>
 
             <div class="footer-item">
-                <a href="#">من نحن</a>
-                <a href="#">اتصل بنا</a>
-                <a href="#">سياسة الارجاع</a>
-                <a href="#">الخصوصية</a>
-                <a href="#">سياسة الارجاع</a>
-                <a href="#">الخصوصية</a>
+                <router-link v-for="category in categories.slice(0, 3)" :to='`/category/${category.idCategory}`' :key="category.idCategory">
+                    {{ category.categoryName }}
+                </router-link>
             </div>
 
             <div class="footer-item">
-                <a href="#">من نحن</a>
-                <a href="#">اتصل بنا</a>
-                <a href="#">سياسة الارجاع</a>
-                <a href="#">الخصوصية</a>
-                <a href="#">سياسة الارجاع</a>
-                <a href="#">الخصوصية</a>
+                <router-link v-for="category in categories.slice(3, 6)" :to='`/category/${category.idCategory}`' :key="category.idCategory">
+                    {{ category.categoryName }}
+                </router-link>
             </div>
 
             <div class="footer-item">
-                <a href="#">من نحن</a>
-                <a href="#">اتصل بنا</a>
-                <a href="#">سياسة الارجاع</a>
-                <a href="#">الخصوصية</a>
-                <a href="#">سياسة الارجاع</a>
-                <a href="#">الخصوصية</a>
+                <router-link v-for="category in categories.slice(6, categories.length-1)" :to='`/category/${category.idCategory}`' :key="category.idCategory">
+                    {{ category.categoryName }}
+                </router-link>
             </div>
         </div>
 
@@ -296,13 +287,18 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            justify-content: center;
+            justify-content: stretch;
             width: 100%;
             padding: 30px 10px;
+            opacity: .7;
+            transition: all 0.2s ease 0.05s;
+
+            &:hover {
+                opacity: 1;
+            }
 
             &-logo {
                 padding: 30px;
-                opacity: .5;
                 transition: all 0.2s ease 0.05s;
 
                 .logo {
@@ -339,7 +335,6 @@
                 text-align: right;
                 text-decoration: none;
                 color: #28DF47;
-                opacity: .5;
                 padding: 5px 5px;
                 position: relative;
                 min-width: 120px;
@@ -428,6 +423,7 @@ export default {
     data() {
         return {
             sidebar: false,
+            categories: [],
             loading_screen: true,
             upBtn: false,
             mobileVersion: '',
@@ -491,7 +487,7 @@ export default {
             console.error(err)
         });
 
-        console.log(this.appinfo)
+        this.getCategories();
     },
 
     watch: {
@@ -524,6 +520,17 @@ export default {
             } else {
                 up.classList.remove('active')
             }
+        },
+
+        getCategories() {
+            let self = this;
+            self.axios.get('categories')
+                .then(data => {
+                    self.categories = data.data;
+                })
+                .catch(err => {
+                    console.error(err);
+                })
         },
 
         detectMob() {

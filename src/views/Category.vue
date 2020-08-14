@@ -80,6 +80,8 @@
 
 <script>
 import serverPath from '../plugins/ServerSidePath'
+import AppVue from '../App.vue';
+import indexVue from '../components/navbar/index.vue';
 export default {
     data() {
         return {
@@ -132,7 +134,7 @@ export default {
             self.axios.get(`category/${self.$route.params.id}`)
             .then(data => {
                 self.breadcrumb_list[2].text = data.data.categoryName;
-                console.log(data)
+                self.cateName = data.data.categoryName;
             })
             .catch(err => {
                 throw new Error(err)
@@ -171,6 +173,30 @@ export default {
             },
             immediate: true,
         }
+    },
+
+    metaInfo: {
+        title: 'التصنيفات',
+        titleTemplate: '%s | المتجر العراقي',
+        htmlAttrs: {
+            lang: 'ar',
+            amp: true
+        },
+        bodyAttrs: {
+            class: ['body']
+        },
+        meta: [{
+                charset: 'utf-8'
+            },
+            {
+                name: 'description',
+                content: 'foo'
+            },
+            {
+                name: 'viewport',
+                content: 'width=device-width, initial-scale=1'
+            }
+        ],
     },
 }
 </script>

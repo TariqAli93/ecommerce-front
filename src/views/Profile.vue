@@ -52,6 +52,33 @@
         </v-card>
     </v-dialog>
 
+    <v-dialog v-model="updatePasswordModal" persistent max-width="500px" transition="dialog-transition">
+        <v-card class="elevation-0 pa-0">
+            <v-toolbar dark color="#28DF47" elevation="0">
+                <v-btn icon dark @click="updatePasswordModal = false">
+                    <i class="im im-x-mark"></i>
+                </v-btn>
+                <v-toolbar-title>تعديل كلمة المرور</v-toolbar-title>
+            </v-toolbar>
+
+            <v-form ref="updatePassword" class="pa-5" v-model="valid" lazy-validation @submit.prevent="resetPassword($event)">
+                <v-row>
+                    <v-col cols="12">
+                        <v-text-field color="#28DF47" label="كلمة المرور القديمة" :type="showPassword ? 'text' : 'password'" v-model="oldPassword" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword" prepend-inner-icon="fa-lock"></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12">
+                        <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => (v && v.length > 6) || 'كلمة المرور قصيرة']" label="كلمة المرور الجديدة" :type="showPassword ? 'text' : 'password'" required v-model="newPassword" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword" prepend-inner-icon="fa-lock"></v-text-field>
+                    </v-col>
+                </v-row>
+
+                <v-btn color="#28DF47" depressed block dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
+                    تحديث
+                </v-btn>
+            </v-form>
+        </v-card>
+    </v-dialog>
+
     <v-container>
         <div class="profile-content">
             <div class="banner">
@@ -63,7 +90,12 @@
                         </div>
 
                         <div>
-                            <v-btn color="#28DF47" depressed medium dark @click="updateProfileModal = true">
+                            <v-btn color="secondary" depressed medium dark @click="updatePasswordModal = true">
+                                <i class="im im-key" style="font-size: 13px; margin-left: 10px"></i>
+                                <span>تغير كلمة المرور</span>
+                            </v-btn>
+
+                            <v-btn color="#28DF47" depressed medium dark @click="updateProfileModal = true" class="mr-5">
                                 <i class="im im-edit" style="font-size: 13px; margin-left: 10px"></i>
                                 <span>تحرير</span>
                             </v-btn>
@@ -141,16 +173,43 @@
 
 <script>
 export default {
+    metaInfo: {
+        title: 'الملف الشخصي',
+        titleTemplate: '%s | المتجر العراقي',
+        htmlAttrs: {
+            lang: 'ar',
+            amp: true
+        },
+        bodyAttrs: {
+            class: ['body']
+        },
+        meta: [{
+                charset: 'utf-8'
+            },
+            {
+                name: 'description',
+                content: 'foo'
+            },
+            {
+                name: 'viewport',
+                content: 'width=device-width, initial-scale=1'
+            }
+        ],
+    },
     data() {
         return {
             page: 1,
             pageCount: 0,
             itemsPerPage: 10,
             updateProfileModal: false,
+            updatePasswordModal: false,
             valid: true,
             btn_loading: false,
             phone: '',
             address: '',
+            newPassword: '',
+            oldPassword: '',
+            showPassword: false,
             profileInfo: {
                 name: '',
                 email: '',
@@ -264,6 +323,39 @@ export default {
             });
         },
 
+        resetPassword(event) {
+            let self = this;
+            let token = self.$store.state.token;
+            let user_id = self.decodeJwt(token).id;
+
+            if (self.newPassword === self.oldPassword) {
+                self.addToCartSnackbar = true;
+                self.addToCartSnackbarColor = 'error';
+                self.addToCartSnackbarText = 'كلمة السر الجديدة يجب ان تكون مختلفة عن القديمة';
+                self.btn_loading = false;
+            } else {
+                self.axios.post('updatePassword', {
+                    id: user_id,
+                    password: self.newPassword,
+                    oldPassword: self.oldPassword
+                }, {
+                    headers: {
+                        Authorization: `bearer ${token}`
+                    }
+                }).then(data => {
+                    self.addToCartSnackbar = true;
+                    self.addToCartSnackbarColor = '#28DF47';
+                    self.addToCartSnackbarText = 'تم تحديث كلمة المرور بنجاح';
+                    self.btn_loading = false;
+                    self.updatePasswordModal = false;
+                    console.log(data)
+                }).catch(err => {
+                    console.error(err);
+                    self.btn_loading = false;
+                });
+            }
+        },
+
         validate() {
             this.$refs.updateProfile.validate()
         },
@@ -324,7 +416,6 @@ export default {
             .catch(err => {
                 console.error(err.response);
             });
-
 
         this.getUserInfo();
     }

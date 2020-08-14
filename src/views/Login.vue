@@ -9,27 +9,49 @@
             </v-btn>
         </template>
     </v-snackbar>
-    <v-dialog v-model="dialog" max-width="650px" origin="center center" persistent>
+
+    <v-dialog v-model="dialog" max-width="450px" origin="center center" persistent>
         <v-card class="pa-0" style="overflow: auto">
-            <v-system-bar class="pa-5" height="70px" color="secondary" dark>
-                <v-btn color="secondary" fab small @click="dialog = false">
-                    <i class="im im-x-mark"></i>
+            <v-system-bar class="pa-5" height="70px" color="#28DF47" dark>
+                <v-btn color="secondary" icon small @click="dialog = false">
+                    <i style="font-size: 13px" class="im im-x-mark"></i>
                 </v-btn>
             </v-system-bar>
 
-            <v-form ref="login" class="pa-4" v-model="valid" lazy-validation @submit.prevent="login">
+            <v-form ref="checkUserEmailForm" class="pa-4" v-model="validCheckUserEmailForm" lazy-validation @submit.prevent="checUserkEmail()">
                 <v-row>
                     <v-col cols="12">
                         <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /.+@.+\..+/.test(v) || 'ايميل غير صحيح']" type="email" required autocomplete="off" v-model="resetEmail" label="البريد الالكتروني" prepend-inner-icon="fa-envelope"></v-text-field>
                     </v-col>
                 </v-row>
 
-                <v-btn color="#28DF47" :disabled="!valid" width="200px" depressed large class="mx-auto" block type="submit">
-                    اعادة تعين
+                <v-btn color="#28DF47" :disabled="!validCheckUserEmailForm" dark :loading="btn_loading" depressed large class="mx-auto" block type="submit">
+                    ارسال الكود
                 </v-btn>
             </v-form>
         </v-card>
     </v-dialog>
+
+    <v-dialog v-model="userVerifcationCode" max-width="450px" origin="center center" persistent>
+        <v-card class="pa-0" style="overflow: auto">
+            <v-system-bar class="pa-5" height="70px" color="#28DF47" dark>
+                <v-btn color="secondary" icon small @click="userVerifcationCode = false">
+                    <i style="font-size: 13px" class="im im-x-mark"></i>
+                </v-btn>
+            </v-system-bar>
+
+            <div class="pa-7">
+                <CodeInput :loading="false" class="userVerifcationCode" v-on:complete="userVerifcationCodeComplete" />
+            </div>
+
+            <div class="pa-5">
+                <v-btn color="#28DF47" dark depressed large class="mx-auto" block @click.stop="checkVerifcationCode()">
+                    ارسال الكود
+                </v-btn>
+            </div>
+        </v-card>
+    </v-dialog>
+
     <div class="parts">
         <div class="part w-30">
             <div class="form">
@@ -44,7 +66,7 @@
                         </v-col>
 
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="password" required v-model="password" label="كلمة المرور" prepend-inner-icon="fa-lock"></v-text-field>
+                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" :type="showPassword ? 'text' : 'password'" required v-model="password" label="كلمة المرور" prepend-inner-icon="fa-lock" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword"></v-text-field>
                         </v-col>
                     </v-row>
 
@@ -78,19 +100,50 @@
 </template>
 
 <script>
+import CodeInput from "vue-verification-code-input";
 export default {
+    metaInfo: {
+        title: 'تسجيل الدخول',
+        titleTemplate: '%s | المتجر العراقي',
+        htmlAttrs: {
+            lang: 'ar',
+            amp: true
+        },
+        bodyAttrs: {
+            class: ['body']
+        },
+        meta: [{
+                charset: 'utf-8'
+            },
+            {
+                name: 'description',
+                content: 'foo'
+            },
+            {
+                name: 'viewport',
+                content: 'width=device-width, initial-scale=1'
+            }
+        ],
+    },
+    components: {
+        CodeInput
+    },
     data() {
         return {
             username: '',
             password: '',
             resetEmail: '',
+            showPassword: false,
             valid: true,
+            validCheckUserEmailForm: true,
             dialog: false,
+            userVerifcationCode: false,
+            userVerifcationCodeNumber: '',
             message: '',
             color: '',
             snackbar: false,
             btn_loading: false,
-            rememberMe: false
+            rememberMe: false,
         }
     },
 
@@ -155,14 +208,80 @@ export default {
             }
         },
 
-        validate() {
-            this.$refs.login.validate()
+        checUserkEmail() {
+            let self = this;
+            self.btn_loading = true;
+            if (this.$refs.checkUserEmailForm.validate()) {
+                self.axios.post('checkUserEmail', {
+                    email: self.resetEmail
+                }).then(data => {
+                    self.snackbar = true;
+                    self.color = '#28DF47';
+                    self.message = 'تحقق من البريد الالكتروني';
+                    self.btn_loading = false;
+                    self.dialog = false;
+                    self.userVerifcationCode = true;
+                    console.log(data);
+                }).catch(err => {
+                    self.snackbar = true;
+                    self.color = 'error';
+                    self.message = 'يوجد خطأ في تأكيد البريد الالكتروني';
+                    self.btn_loading = false;
+                    self.dialog = false;
+                    console.error(err);
+                })
+            }
+
         },
+
+        userVerifcationCodeComplete(v) {
+            this.userVerifcationCodeNumber = v;
+        },
+
+        checkVerifcationCode() {
+            let self = this;
+            self.btn_loading = true;
+            self.axios.post('resetPassword', {
+                email: self.resetEmail,
+                code: self.userVerifcationCodeNumber
+            }).then(data => {
+                self.snackbar = true;
+                self.color = '#28DF47';
+                self.message = 'تم ارسال كلمة المرور الى البريد الالكتروني';
+                self.btn_loading = false;
+                self.dialog = false;
+                self.userVerifcationCode = false;
+                console.log(data);
+            }).catch(err => {
+                self.snackbar = true;
+                self.color = 'error';
+                self.message = 'يوجد خطأ في تأكيد البريد الالكتروني';
+                self.btn_loading = false;
+                self.dialog = false;
+                console.error(err);
+            })
+        }
     },
 }
 </script>
 
 <style lang="scss">
+.userVerifcationCode {
+    width: 100% !important;
+
+    .react-code-input {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        input {
+            border-radius: 5px !important;
+            border: 2px solid rgba(black, .10);
+        }
+    }
+}
+
 .login-page {
     height: 100vh;
     width: 100vw;
