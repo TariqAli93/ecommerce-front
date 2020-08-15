@@ -9,6 +9,7 @@ import Category from '../views/Category'
 import Product from '../views/Product'
 import Invoice from '../views/Invoice'
 import Verify from '../views/Verify'
+import PageNotFound from '../views/PageNotFound'
 
 Vue.use(VueRouter)
 
@@ -85,6 +86,11 @@ Vue.use(VueRouter)
       requiresVisitor: true
     }
   },
+  {
+    path: '*',
+    name: 'PageNotFound',
+    component: PageNotFound
+  }
 ]
 
 const router = new VueRouter({

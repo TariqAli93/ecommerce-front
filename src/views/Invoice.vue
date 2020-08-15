@@ -35,7 +35,7 @@
             
             <template v-slot:footer>
                 <v-card elevation="0" class="pa-5 grey lighten-3 mt-3" tile>
-                    <span><strong>المجموع:</strong>  <strong>{{ totalAllPrices.reduce((a, b) => a + b).toFixed(0) }}</strong> <strong>دولار</strong></span>
+                    <span v-if="totalAllPrices.length > 0"><strong>المجموع:</strong>  <strong>{{ totalAllPrices.reduce((a, b) => a + b) }}</strong> <strong>دولار</strong></span>
                 </v-card>
             </template>
         </v-data-table>
@@ -155,25 +155,23 @@ export default {
         })
         .then(result => {
             self.products = result.data.products;
-            setTimeout(() => {
-                for(let prod in self.products) {
-                    self.totalAllPrices.push(self.products[prod].totalPrice);
-                }
-            }, 0);
         }).catch((err) => {
             console.error(err)
         });
-
-        this.filteredProducts
     },
 
     computed: {
         filteredProducts() {
             let self = this;
             self.invoice_id = Number(self.$route.params.id);
-            return self.products.filter(product => {
+            let fp = self.products.filter(product => {
                 return product.idInvoice === self.invoice_id;
             });
+
+            for(let prod in fp) {
+                self.totalAllPrices.push(fp[prod].totalPrice);
+            }
+            return fp;
         },
     }
 }
