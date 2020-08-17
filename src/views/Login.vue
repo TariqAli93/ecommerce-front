@@ -12,7 +12,7 @@
 
     <v-dialog v-model="dialog" max-width="450px" origin="center center" persistent>
         <v-card class="pa-0" style="overflow: auto">
-            <v-system-bar class="pa-5" height="70px" color="#28DF47" dark>
+            <v-system-bar class="pa-5" height="70px" color="#69BCB8" dark>
                 <v-btn color="secondary" icon small @click="dialog = false">
                     <i style="font-size: 13px" class="im im-x-mark"></i>
                 </v-btn>
@@ -21,12 +21,12 @@
             <v-form ref="checkUserEmailForm" class="pa-4" v-model="validCheckUserEmailForm" lazy-validation @submit.prevent="checUserkEmail()">
                 <v-row>
                     <v-col cols="12">
-                        <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /.+@.+\..+/.test(v) || 'ايميل غير صحيح']" type="email" required autocomplete="off" v-model="resetEmail" label="البريد الالكتروني" prepend-inner-icon="fa-envelope"></v-text-field>
+                        <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /.+@.+\..+/.test(v) || 'ايميل غير صحيح']" type="email" required autocomplete="off" v-model="resetEmail" label="البريد الالكتروني" prepend-inner-icon="fa-envelope"></v-text-field>
                     </v-col>
                 </v-row>
 
-                <v-btn color="#28DF47" :disabled="!validCheckUserEmailForm" dark :loading="btn_loading" depressed large class="mx-auto" block type="submit">
-                    ارسال الكود
+                <v-btn color="#69BCB8" :disabled="!validCheckUserEmailForm" dark :loading="btn_loading_email" depressed large class="mx-auto" block type="submit">
+                    تحقق من البريد
                 </v-btn>
             </v-form>
         </v-card>
@@ -34,18 +34,18 @@
 
     <v-dialog v-model="userVerifcationCode" max-width="450px" origin="center center" persistent>
         <v-card class="pa-0" style="overflow: auto">
-            <v-system-bar class="pa-5" height="70px" color="#28DF47" dark>
+            <v-system-bar class="pa-5" height="70px" color="#69BCB8" dark>
                 <v-btn color="secondary" icon small @click="userVerifcationCode = false">
                     <i style="font-size: 13px" class="im im-x-mark"></i>
                 </v-btn>
             </v-system-bar>
 
             <div class="pa-7">
-                <CodeInput :loading="false" class="userVerifcationCode" v-on:complete="userVerifcationCodeComplete" />
+                <vue-fake-input :length="6" :fontSize="20" inputColor="#69BCB8" fontColor="secondary" :onlyNumber="true" :allowPaste="true" v-model="codeValue" />
             </div>
 
             <div class="pa-5">
-                <v-btn color="#28DF47" dark depressed large class="mx-auto" block @click.stop="checkVerifcationCode()">
+                <v-btn color="#69BCB8" dark depressed large class="mx-auto" :loading="btn_loading_code" block @click.stop="checkVerifcationCode()">
                     ارسال الكود
                 </v-btn>
             </div>
@@ -55,31 +55,31 @@
     <div class="parts">
         <div class="part w-30">
             <div class="form">
-                <v-btn color="#28DF47" dark to="/" :disabled="btn_loading" fab class="fab-home" width="60px" height="60px">
+                <v-btn color="#69BCB8" dark to="/" :disabled="btn_loading" fab class="fab-home" width="60px" height="60px">
                     <i class="im im-home"></i>
                 </v-btn>
                 <div class="logo"></div>
                 <v-form ref="login" v-model="valid" lazy-validation @submit.prevent="login">
                     <v-row>
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required autocomplete="off" v-model="username" label="اسم المستخدم" prepend-inner-icon="fa-user"></v-text-field>
+                            <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required autocomplete="off" v-model="username" label="اسم المستخدم" prepend-inner-icon="fa-user"></v-text-field>
                         </v-col>
 
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" :type="showPassword ? 'text' : 'password'" required v-model="password" label="كلمة المرور" prepend-inner-icon="fa-lock" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword"></v-text-field>
+                            <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب']" :type="showPassword ? 'text' : 'password'" required v-model="password" label="كلمة المرور" prepend-inner-icon="fa-lock" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword"></v-text-field>
                         </v-col>
                     </v-row>
 
-                    <v-checkbox v-model="rememberMe" color="#28DF47" label="تذكرني"></v-checkbox>
+                    <v-checkbox v-model="rememberMe" color="#69BCB8" label="تذكرني"></v-checkbox>
 
-                    <v-btn color="#28DF47" dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
+                    <v-btn color="#69BCB8" dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
                         تسجيل الدخول
                     </v-btn>
 
                     <div class="divider">
                         <span>او يمكنك</span>
                     </div>
-                    <v-btn color="#28DF47" class="mx-auto" width="200px" large depressed rounded text @click="dialog = true">استعادة كلمة المرور</v-btn>
+                    <v-btn color="#69BCB8" class="mx-auto" width="200px" large depressed rounded text @click="dialog = true">استعادة كلمة المرور</v-btn>
                 </v-form>
             </div>
         </div>
@@ -100,34 +100,38 @@
 </template>
 
 <script>
-import CodeInput from "vue-verification-code-input";
+import VueFakeInput from '../components/Pincode';
 export default {
-    metaInfo: {
-        title: 'تسجيل الدخول',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
-            },
-            {
-                name: 'description',
-                content: 'foo'
-            },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
-    },
     components: {
-        CodeInput
+        VueFakeInput
     },
+
+    metaInfo() {
+        return {
+            title: 'تسجيل الدخول',
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
+            },
+            bodyAttrs: {
+                class: ['body']
+            },
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
+    },
+
     data() {
         return {
             username: '',
@@ -143,19 +147,11 @@ export default {
             color: '',
             snackbar: false,
             btn_loading: false,
+            btn_loading_email: false,
+            btn_loading_code: false,
             rememberMe: false,
+            codeValue: '',
         }
-    },
-
-    mounted() {
-        if (this.isLoggedIn) {
-            this.$router.push({
-                name: 'home'
-            });
-        }
-
-        let self = this;
-        console.log(self.rememberMe == false);
     },
 
     computed: {
@@ -177,7 +173,7 @@ export default {
                     this.$store.dispatch('loginProccess', user)
                         .then((result) => {
                             this.snackbar = true;
-                            this.color = '#28DF47';
+                            this.color = '#69BCB8';
                             this.message = `مرحبا بك ${user.userName}` + ' تم تسجيل الدخول بنجاح'
                             this.btn_loading = false;
                             if (this.rememberMe == true) {
@@ -187,11 +183,8 @@ export default {
                                 sessionStorage.setItem("ACCESS_TOKEN", result.token);
                                 sessionStorage.setItem('username', user.userName);
                             }
-                            if (this.$store.state.token !== null) {
-                                this.$router.push({
-                                    name: 'home'
-                                });
-                            }
+
+                            this.$router.push({name: 'home'}).catch(()=>{});
                         }).catch((err) => {
                             this.snackbar = true;
                             this.color = 'error';
@@ -210,23 +203,22 @@ export default {
 
         checUserkEmail() {
             let self = this;
-            self.btn_loading = true;
+            self.btn_loading_email = true;
             if (this.$refs.checkUserEmailForm.validate()) {
                 self.axios.post('checkUserEmail', {
                     email: self.resetEmail
                 }).then(data => {
                     self.snackbar = true;
-                    self.color = '#28DF47';
+                    self.color = '#69BCB8';
                     self.message = 'تحقق من البريد الالكتروني';
-                    self.btn_loading = false;
+                    self.btn_loading_email = false;
                     self.dialog = false;
                     self.userVerifcationCode = true;
-                    console.log(data);
                 }).catch(err => {
                     self.snackbar = true;
                     self.color = 'error';
                     self.message = 'يوجد خطأ في تأكيد البريد الالكتروني';
-                    self.btn_loading = false;
+                    self.btn_loading_email = false;
                     self.dialog = false;
                     console.error(err);
                 })
@@ -234,31 +226,26 @@ export default {
 
         },
 
-        userVerifcationCodeComplete(v) {
-            this.userVerifcationCodeNumber = v;
-        },
-
         checkVerifcationCode() {
             let self = this;
-            self.btn_loading = true;
+            self.btn_loading_code = true;
             self.axios.post('resetPassword', {
                 email: self.resetEmail,
-                code: self.userVerifcationCodeNumber
+                code: Number(self.codeValue)
             }).then(data => {
                 self.snackbar = true;
-                self.color = '#28DF47';
+                self.color = '#69BCB8';
                 self.message = 'تم ارسال كلمة المرور الى البريد الالكتروني';
-                self.btn_loading = false;
+                self.btn_loading_code = false;
                 self.dialog = false;
                 self.userVerifcationCode = false;
-                console.log(data);
             }).catch(err => {
                 self.snackbar = true;
                 self.color = 'error';
                 self.message = 'يوجد خطأ في تأكيد البريد الالكتروني';
-                self.btn_loading = false;
+                self.btn_loading_code = false;
                 self.dialog = false;
-                console.error(err);
+                console.error(err.response);
             })
         }
     },
@@ -266,18 +253,22 @@ export default {
 </script>
 
 <style lang="scss">
-.userVerifcationCode {
-    width: 100% !important;
+.fk-input-container {
+    width: 100%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    direction: ltr;
 
-    .react-code-input {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
+    input {
+        margin: 0 10px !important;
+        border: 3px solid rgb(238, 238, 238) !important;
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 4px !important;
 
-        input {
-            border-radius: 5px !important;
-            border: 2px solid rgba(black, .10);
+        &:focus {
+            border-color: #69BCB8 !important;
         }
     }
 }
@@ -341,7 +332,7 @@ export default {
                     background: {
                         image: url('../assets/images/logo.png');
                         repeat: no-repeat;
-                        size: auto;
+                        size: contain;
                         position: center;
                     }
 

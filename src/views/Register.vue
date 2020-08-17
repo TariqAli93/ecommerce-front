@@ -11,34 +11,34 @@
     <div class="parts">
         <div class="part w-30">
             <div class="form">
-                <v-btn color="#28DF47" dark to="/" :disabled="btn_loading" fab class="fab-home" width="60px" height="60px">
+                <v-btn color="#69BCB8" dark to="/" :disabled="btn_loading" fab class="fab-home" width="60px" height="60px">
                     <i class="im im-home"></i>
                 </v-btn>
                 <div class="logo"></div>
                 <v-form ref="register" v-model="valid" lazy-validation @submit.prevent="register">
                     <v-row>
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required autocomplete="off" v-model="username" label="اسم المستخدم" prepend-inner-icon="fa-user"></v-text-field>
+                            <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required autocomplete="off" v-model="username" label="اسم المستخدم" prepend-inner-icon="fa-user"></v-text-field>
                         </v-col>
 
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="password" required v-model="password" label="كلمة المرور" prepend-inner-icon="fa-lock"></v-text-field>
+                            <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="password" required v-model="password" label="كلمة المرور" prepend-inner-icon="fa-lock"></v-text-field>
                         </v-col>
 
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /.+@.+\..+/.test(v) || 'البريد الالكتروني غير صحيح']" type="email" required v-model="email" label="البريد الالكتروني" prepend-inner-icon="fa-envelope"></v-text-field>
+                            <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /.+@.+\..+/.test(v) || 'البريد الالكتروني غير صحيح']" type="email" required v-model="email" label="البريد الالكتروني" prepend-inner-icon="fa-envelope"></v-text-field>
                         </v-col>
 
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /^07([\d]{3})[(\D\s)]?[\d]{3}[(\D\s)]?[\d]{3}$/.test(v) || 'رقم الهاتف غير صحيح']" type="text" required v-model="phone" label="رقم الهاتف" prepend-inner-icon="fa-phone"></v-text-field>
+                            <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /^07([\d]{3})[(\D\s)]?[\d]{3}[(\D\s)]?[\d]{3}$/.test(v) || 'رقم الهاتف غير صحيح']" type="text" required v-model="phone" label="رقم الهاتف" prepend-inner-icon="fa-phone"></v-text-field>
                         </v-col>
 
                         <v-col cols="12">
-                            <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required v-model="address" label="العنوان" prepend-inner-icon="fa-map-marker"></v-text-field>
+                            <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required v-model="address" label="العنوان" prepend-inner-icon="fa-map-marker"></v-text-field>
                         </v-col>
                     </v-row>
 
-                    <v-btn color="#28DF47" dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
+                    <v-btn color="#69BCB8" dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
                         انشاء الحساب
                     </v-btn>
                 </v-form>
@@ -62,28 +62,30 @@
 
 <script>
 export default {
-    metaInfo: {
-        title: 'انشاء الحسابات',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
+    metaInfo() {
+        return {
+            title: 'انشاء الحساب',
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
             },
-            {
-                name: 'description',
-                content: 'foo'
+            bodyAttrs: {
+                class: ['body']
             },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
     },
     data() {
         return {
@@ -139,7 +141,7 @@ export default {
 
                 registerPromise.then(data => {
                     self.snackbar = true;
-                    self.color = '#28DF47';
+                    self.color = '#69BCB8';
                     self.message = 'تم انشاء الحساب بنجاح - سيتم توجيهك الى تسجيل الدخول';
 
                     setTimeout(() => {
@@ -241,7 +243,7 @@ export default {
                     background: {
                         image: url('../assets/images/logo.png');
                         repeat: no-repeat;
-                        size: auto;
+                        size: contain;
                         position: center;
                     }
 

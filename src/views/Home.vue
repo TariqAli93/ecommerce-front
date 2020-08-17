@@ -10,12 +10,12 @@
         </template>
     </v-snackbar>
 
-    <v-carousel class="custom-carousel" show-arrows delimiter-icon="fa-minus" next-icon="fa-long-arrow-right" prev-icon="fa-long-arrow-left" hide-delimiter-background show-arrows-on-hover>
-        <v-carousel-item v-for="i in products" :key="i.idProduct">
-            <!-- <img :src="server_url + i.image"> -->
-            <v-img :src="server_url + i.image"></v-img>
-        </v-carousel-item>
-    </v-carousel>
+    <header class="home-header">
+        <div class="header-content">
+            <h1>{{ $store.getters.appInfo.app_name }}</h1>
+            <p>يسعدنا تقديم افضل المنتجات بأنسب الاسعار و لجميع المحافظات</p>
+        </div>
+    </header>
 
     <section class="section">
         <div class="title">
@@ -33,6 +33,9 @@
             <v-row v-else>
                 <v-col cols="12" xl="4" lg="4" md="12" sm="12" v-for="product in new_products" :key="product.idProduct">
                     <div class="card" v-show="pageLoaded">
+                        <div class="out-of-stock" v-if="product.quantity < 1">
+                            <span>غير متوفر</span>
+                        </div>
                         <div class="card-image">
                             <img :src="server_url + product.image" />
                         </div>
@@ -44,15 +47,13 @@
 
                             <div class="card-content-body">
                                 <div class="card-content-body-btns">
-                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px" :to="`/product/${product.idProduct}`">
-                                        <i class="im im-eye" style="font-size: 13px"></i>
+                                    <v-btn color="secondary" fab :to="`/product/${product.idProduct}`">
+                                        <i class="im im-eye" style="font-size: 18px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" v-if="product.quantity > 1" dark rounded width="40px" min-width="20px" height="40px" :disabled="product.quantity < 1" @click="saveToCart(product)">
-                                        <i class="im im-shopping-cart" style="font-size: 13px"></i>
+                                    <v-btn color="#69BCB8" :dark="product.quantity > 0" fab :disabled="product.quantity < 1" @click="saveToCart(product)">
+                                        <i class="im im-shopping-cart" style="font-size: 18px"></i>
                                     </v-btn>
-
-                                    <small v-else>غير متوفر</small>
                                 </div>
 
                                 <h4><span>{{ product.price }}</span> <i class="fa fa-dollar"></i> </h4>
@@ -103,6 +104,9 @@
                     </v-sheet>
 
                     <div class="card" v-show="pageLoaded">
+                        <div class="out-of-stock" v-if="product.quantity < 1">
+                            <span>غير متوفر</span>
+                        </div>
                         <div class="card-image">
                             <img :src="server_url + product.image" />
                         </div>
@@ -114,15 +118,13 @@
 
                             <div class="card-content-body">
                                 <div class="card-content-body-btns">
-                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px" :to="`/product/${product.idProduct}`">
-                                        <i class="im im-eye" style="font-size: 13px"></i>
+                                    <v-btn color="secondary" fab :to="`/product/${product.idProduct}`">
+                                        <i class="im im-eye" style="font-size: 18px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" v-if="product.quantity > 1" dark rounded width="40px" min-width="20px" height="40px" :disabled="product.quantity < 1" @click="saveToCart(product)">
-                                        <i class="im im-shopping-cart" style="font-size: 13px"></i>
+                                    <v-btn color="#69BCB8" :dark="product.quantity > 0" fab :disabled="product.quantity < 1" @click="saveToCart(product)">
+                                        <i class="im im-shopping-cart" style="font-size: 18px"></i>
                                     </v-btn>
-
-                                    <small v-else>غير متوفر</small>
                                 </div>
 
                                 <h4><span>{{ product.price }}</span> <i class="fa fa-dollar"></i> </h4>
@@ -140,16 +142,6 @@
         </v-container>
     </section>
 
-    <!-- <section class="parallax">
-        <div class="content d-flex align-center justify-center flex-column" style="height: 100%">
-            <h1>خليك بالبيت</h1>
-            <P>المتجر العراقي يوفر لك احتياجاتك بدون متروح للسوق و توصيل مجانا لحد باب البيت انته اطلب و احنه انفذ</P>
-            <v-btn color="white" outlined rounded>
-                اطلب الان
-            </v-btn>
-        </div>
-    </section> -->
-
     <section class="section">
         <div class="title">
             <span>كل المنتجات</span>
@@ -162,6 +154,9 @@
                     </v-sheet>
 
                     <div class="card" v-show="pageLoaded">
+                        <div class="out-of-stock" v-if="product.quantity < 1">
+                            <span>غير متوفر</span>
+                        </div>
                         <div class="card-image">
                             <img :src="server_url + product.image" />
                         </div>
@@ -173,15 +168,13 @@
 
                             <div class="card-content-body">
                                 <div class="card-content-body-btns">
-                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px" :to="`/product/${product.idProduct}`">
-                                        <i class="im im-eye" style="font-size: 13px"></i>
+                                    <v-btn color="secondary" fab :to="`/product/${product.idProduct}`">
+                                        <i class="im im-eye" style="font-size: 18px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" v-if="product.quantity > 1" dark rounded width="40px" min-width="20px" height="40px" :disabled="product.quantity < 1" @click="saveToCart(product)">
-                                        <i class="im im-shopping-cart" style="font-size: 13px"></i>
+                                    <v-btn color="#69BCB8" :dark="product.quantity > 0" fab :disabled="product.quantity < 1" @click="saveToCart(product)">
+                                        <i class="im im-shopping-cart" style="font-size: 18px"></i>
                                     </v-btn>
-
-                                    <small v-else>غير متوفر</small>
                                 </div>
 
                                 <h4><span>{{ product.price }}</span> <i class="fa fa-dollar"></i> </h4>
@@ -201,7 +194,7 @@
                 <img src="../assets/images/loading-icon.svg" alt="Loading...">
             </div>
 
-            <v-btn color="#28DF47" :disabled="isLoadingMoreProducts || !pageLoaded" class="mx-auto" style="margin: 0 auto; display: block; margin-top: 15px" dark depressed rounded @click="getMoreProducts">
+            <v-btn color="#69BCB8" :disabled="isLoadingMoreProducts || !pageLoaded" class="mx-auto" style="margin: 0 auto; display: block; margin-top: 15px" dark depressed rounded @click="getMoreProducts">
                 <i class="im im-plus" style="font-size: 10px; margin-left: 5px"></i>
                 <span>عرض المزيد</span>
             </v-btn>
@@ -213,28 +206,30 @@
 <script>
 import serverPath from '../plugins/ServerSidePath'
 export default {
-    metaInfo: {
-        title: 'الصفحة الرئيسية',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
+    metaInfo() {
+        return {
+            title: 'الصفحة الرئيسية',
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
             },
-            {
-                name: 'description',
-                content: 'foo'
+            bodyAttrs: {
+                class: ['body']
             },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
     },
     data() {
         return {
@@ -261,7 +256,7 @@ export default {
     methods: {
         saveToCart(product) {
             this.addToCartSnackbar = false;
-            
+
             this.$store.dispatch('additemToCart', {
                 product: product,
                 qty: 1
@@ -346,12 +341,27 @@ export default {
 </script>
 
 <style lang="scss">
-.v-main {
-    &.is-padding {
-        padding-top: 160px !important;
+@function strip-unit($value) {
+    @return $value / ($value * 0 + 1);
+}
 
-        @media (max-width: 1161px) {
-            padding-top: 87px !important;
+@mixin fluid-type($min-vw, $max-vw, $min-font-size, $max-font-size) {
+    $u1: unit($min-vw);
+    $u2: unit($max-vw);
+    $u3: unit($min-font-size);
+    $u4: unit($max-font-size);
+
+    @if $u1==$u2 and $u1==$u3 and $u1==$u4 {
+        & {
+            font-size: $min-font-size;
+
+            @media screen and (min-width: $min-vw) {
+                font-size: calc(#{$min-font-size} + #{strip-unit($max-font-size - $min-font-size)} * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}));
+            }
+
+            @media screen and (min-width: $max-vw) {
+                font-size: $max-font-size;
+            }
         }
     }
 }
@@ -359,105 +369,80 @@ export default {
 .home-page {
     min-height: 100%;
 
-    .custom-carousel {
-        height: 100vh !important;
+    .home-header {
+        display: block;
+        height: 100vh;
+        width: 100%;
+        position: relative;
+        background: white;
+        padding: 0 5rem;
 
-        .v-responsive__content {
-            height: 100%;
+        @media (max-width: 1100px) {
+            padding: 0;
         }
 
-        .v-carousel__item {
-            height: 100% !important;
-        }
-
-        .v-window__next,
-        .v-window__prev {
-            button {
-                background: #28DF47 !important;
-                color: white !important;
-                width: 70px;
-                height: 70px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 5px;
-            }
-        }
-
-        .v-carousel__controls {
-            .theme--dark.v-btn.v-btn--icon {
-                border-radius: 5px !important;
-                background: transparent !important;
-                color: white !important;
-
-                &:before {
-                    opacity: 1;
-                    background: transparent !important;
-                }
-
-                i {
-                    color: white !important;
-                    opacity: 1;
-                }
-
-                &.v-item--active {
-                    background: #28DF47 !important;
-                    color: white !important;
-
-                    &:before {
-                        opacity: 1;
-                        background: #28DF47 !important;
-                    }
-
-                    i {
-                        color: white !important;
-                        opacity: 1;
-                    }
-                }
-            }
-        }
-
-        img {
-            display: block;
+        &:before {
+            content: "";
+            position: absolute;
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
+
+            background: {
+                image: url('../assets/images/header-image.svg');
+                repeat: no-repeat;
+                position: left bottom;
+                size: 43%;
+            }
+
+            ;
+
+            @media (max-width: 1100px) {
+                display: none;
+            }
         }
-    }
 
-    .parallax {
-        min-height: 250px;
-        padding: 3rem 0;
-        position: relative;
-        filter: hue-rotate(295deg);
-
-        background: {
-            image: url('../assets/images/background.png');
-            repeat: no-repeat;
-            position: right top;
-            size: 100%;
-            attachment: fixed;
-        }
-
-        .content {
+        .header-content {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            flex-direction: column;
+            width: 55%;
             height: 100%;
-            color: white;
-            padding: 10px;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 2;
+
+            @media (max-width: 1100px) {
+                width: 100%;
+                align-items: center;
+                text-align: center;
+                padding: 0px 50px;
+            }
 
             h1 {
-                font-size: 4rem;
-                padding: 10px;
+                $min_width: 320px;
+                $max_width: 1200px;
+                $min_font: 16px;
+                $max_font: 75px;
+
+                color: #69BCB8;
+                @include fluid-type($min_width, $max_width, $min_font, $max_font);
                 font-weight: 900;
             }
 
             p {
-                padding: 10px;
-                font-weight: 500;
-                max-width: 400px;
-                text-align: center;
-                line-height: 2;
+                $min_width: 320px;
+                $max_width: 1200px;
+                $min_font: 13px;
+                $max_font: 40px;
+
+                @include fluid-type($min_width, $max_width, $min_font, $max_font);
+                font-weight: 400;
+                color: black;
+                width: 704px;
+
+                @media (max-width: 1100px) {
+                    width: 100%;
+                }
             }
         }
     }
@@ -537,6 +522,19 @@ export default {
         box-shadow: 0 4px 13px 0 rgb(0, 0, 0, 9%);
         transition: all 0.2s ease 0.05s;
 
+        .out-of-stock {
+            position: absolute;
+            padding: 10px 0px;
+            background: black;
+            color: white;
+            width: 165px;
+            text-align: center;
+            transform: rotate(45deg) translate(43px, -20px);
+            z-index: 1;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
         .product-name {
             display: flex;
             align-items: flex-end;
@@ -550,7 +548,7 @@ export default {
             height: 200px;
             background: rgb(0, 0, 0);
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.6898109585631127) 0%, rgba(255, 255, 255, 0) 100%);
-            color: #28DF47;
+            color: #69BCB8;
         }
 
         &-image {
@@ -594,14 +592,14 @@ export default {
                 text-align: center;
                 position: relative;
                 padding: 10px 0px;
-                color: #28DF47;
+                color: #69BCB8;
 
                 &:before {
                     content: "";
                     position: absolute;
                     width: 0%;
                     height: 3px;
-                    background: #28DF47;
+                    background: #69BCB8;
                     bottom: 0;
                     left: 0;
                     transition: all 0.2s ease 0.09s;

@@ -8,28 +8,30 @@
 
 <script>
 export default {
-    metaInfo: {
-        title: 'تأكيد الحساب',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
+    metaInfo() {
+        return {
+            title: 'تأكيد الحساب',
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
             },
-            {
-                name: 'description',
-                content: 'foo'
+            bodyAttrs: {
+                class: ['body']
             },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
     },
     data() {
         return {

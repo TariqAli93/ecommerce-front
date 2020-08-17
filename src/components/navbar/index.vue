@@ -1,6 +1,6 @@
 <template>
 <div class="navbar-wrapper">
-    <v-snackbar v-model="logoutSnackBar" style="z-index: 5600" color="#28DF47" absolute app dark bottom centered>
+    <v-snackbar v-model="logoutSnackBar" style="z-index: 5600" color="#69BCB8" absolute app dark bottom centered>
         {{ logoutMessage }}
     </v-snackbar>
 
@@ -16,7 +16,7 @@
             <v-card-actions class="d-flex align-center justify-center" width="100">
                 <v-spacer></v-spacer>
                 <div class="d-flex align-center justify-start" style="width: 100%">
-                    <v-btn color="#28DF47" :loading="dialog_logout_accept_loading" class="mx-auto d-block" text @click="logout()">
+                    <v-btn color="#69BCB8" :loading="dialog_logout_accept_loading" class="mx-auto d-block" text @click="logout()">
                         تسجيل الخروج
                     </v-btn>
 
@@ -38,19 +38,18 @@
 
             <div class="middle-wrapper">
                 <div class="search-container">
-                    <v-autocomplete clearable dense :cache-items="false" v-model="navbar_search" :loading="search_loading" :items="search_items" :search-input.sync="search_input" item-text="productName" item-value="idProduct" hide-details label="هل تبحث عن منتج ؟" color="#28DF47" solo-inverted @change="gotToProduct(navbar_search)" flat>
+                    <v-autocomplete clearable dense :cache-items="false" v-model="navbar_search" :loading="search_loading" :items="search_items" :search-input.sync="search_input" item-text="productName" item-value="idProduct" hide-details label="هل تبحث عن منتج ؟" color="#69BCB8" solo-inverted @change="gotToProduct(navbar_search)" flat>
                     </v-autocomplete>
                 </div>
             </div>
 
             <div class="left-wrapper">
                 <div class="shopping-btn">
-                    <v-btn color="#28DF47" dark depressed medium @click="$store.state.sidebar = true">
-                        <i style="font-size: 14px; margin-left: 10px" class="im im-shopping-cart"></i>
-                        <span>سلة المشتريات</span>
-                        <div class="badge-number elevation-2">
-                            <small>{{ $store.getters.product_count }}</small>
-                        </div>
+                    <v-btn color="#69BCB8" text dark depressed medium @click="$store.state.sidebar = true">
+                        <span style="margin-right: 5px; font-weight: 300;"><span>{{totalPrice}}</span> <span>&#36;</span></span>
+                        <span style="padding: 0 10px">|</span>
+                        <i style="font-size: 15px;" class="im im-shopping-cart"></i>
+                        <small style="font-size: 15px; font-weight: 300">{{ $store.getters.product_count }}</small>
                     </v-btn>
                 </div>
             </div>
@@ -61,7 +60,7 @@
         <div class="bottom">
             <div class="logo">
                 <router-link to="/">
-                    <img src="../../assets/images/logo.png" alt="المتجر العراقي">
+                    <img :src="imagePath + appinfo.app_logo" :alt="appinfo.app_name">
                 </router-link>
             </div>
 
@@ -78,7 +77,7 @@
                         </router-link>
                     </li>
 
-                    <v-menu color="#28DF47" open-on-hover left transition="slide-y-transition" bottom v-if="categories.length < 7">
+                    <v-menu color="#69BCB8" open-on-hover left transition="slide-y-transition" bottom v-if="categories.length < 7">
                         <template v-slot:activator="{ on, attrs }">
                             <li class="navlist-li order-2">
                                 <a v-bind="attrs" v-on="on" exact-active-class="active" exact>
@@ -87,23 +86,23 @@
                             </li>
                         </template>
 
-                        <v-list nav color="#28DF47" dark>
+                        <v-list nav color="#69BCB8" dark>
                             <v-list-item v-for="category in categoriesNotInList" :key="category.idCategory" :to="`/category/${category.idCategory}`">
-                                <v-list-item-title color="#28DF47">{{ category.categoryName }}</v-list-item-title>
+                                <v-list-item-title color="#69BCB8">{{ category.categoryName }}</v-list-item-title>
                             </v-list-item>
                         </v-list>
                     </v-menu>
                 </ul>
 
                 <div>
-                    <v-menu v-if="$store.getters.isLoggedIn" color="#28DF47" left open-on-hover transition="slide-y-transition" bottom>
+                    <v-menu v-if="$store.getters.isLoggedIn" color="#69BCB8" left open-on-hover transition="slide-y-transition" bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn color="#28DF47" height="60px" depressed medium dark v-bind="attrs" v-on="on">
+                            <v-btn color="#69BCB8" height="60px" depressed medium dark v-bind="attrs" v-on="on">
                                 <i class="im im-user-circle ml-3"></i>
                                 {{ username }}
                             </v-btn>
                         </template>
-                        <v-list color="#28DF47" dark>
+                        <v-list color="#69BCB8" dark>
                             <v-list-item to="/profile">
                                 <v-list-item-title><i class="fa fa-user-circle ml-3"></i> الملف الشخصي</v-list-item-title>
                             </v-list-item>
@@ -114,7 +113,7 @@
                         </v-list>
                     </v-menu>
 
-                    <v-btn v-else color="#28DF47" to="/login" width="60px" height="60px" depressed medium dark>
+                    <v-btn v-else color="#69BCB8" to="/login" width="60px" height="60px" depressed medium dark>
                         <i class="im im-user-male"></i>
                     </v-btn>
                 </div>
@@ -125,26 +124,26 @@
     <div class="mobile-navbar">
         <v-toolbar color="transparent" dense flat>
             <router-link to="/" class="mobile-logo align-center text--primary">
-                <v-img src="../../assets/images/mobile-logo.png"></v-img>
+                <v-img :src="imagePath + appinfo.app_mobile_logo" contain max-width="70px"></v-img>
             </router-link>
 
             <v-spacer></v-spacer>
 
             <div class="v-responsive mr-auto mr-md-4 transition-swing" v-show="mobileSearch">
-                <v-autocomplete clearable dense :cache-items="false" v-model="navbar_search" :loading="search_loading" :items="search_items" :search-input.sync="search_input" item-text="productName" item-value="idProduct" hide-details label="هل تبحث عن منتج ؟" color="#28DF47" solo-inverted @change="gotToProduct(navbar_search)" flat>
+                <v-autocomplete clearable dense :cache-items="false" v-model="navbar_search" :loading="search_loading" :items="search_items" :search-input.sync="search_input" item-text="productName" item-value="idProduct" hide-details label="هل تبحث عن منتج ؟" color="#69BCB8" solo-inverted @change="gotToProduct(navbar_search)" flat>
                 </v-autocomplete>
             </div>
 
             <div class="mobile-icons">
                 <!-- login -->
-                <v-menu v-if="$store.getters.isLoggedIn" color="#28DF47" left transition="slide-y-transition" bottom>
+                <v-menu v-if="$store.getters.isLoggedIn" color="#69BCB8" left transition="slide-y-transition" bottom>
                     <template v-slot:activator="{ on, attrs }">
-                        <v-btn color="#28DF47" height="60px" depressed medium dark v-bind="attrs" v-on="on">
+                        <v-btn color="#69BCB8" height="60px" depressed medium dark v-bind="attrs" v-on="on">
                             <i class="im im-user-circle ml-3"></i>
                             {{ username }}
                         </v-btn>
                     </template>
-                    <v-list color="#28DF47" dark>
+                    <v-list color="#69BCB8" dark>
                         <v-list-item to="/profile">
                             <v-list-item-title><i class="fa fa-user-circle ml-3"></i> الملف الشخصي</v-list-item-title>
                         </v-list-item>
@@ -155,30 +154,30 @@
                     </v-list>
                 </v-menu>
 
-                <v-btn dark icon color="#28DF47" v-else to="/login">
+                <v-btn dark icon color="#69BCB8" v-else to="/login">
                     <i class="im im-user-circle" style="font-size: 15px"></i>
                 </v-btn>
 
                 <!-- shopping cart -->
-                <v-badge bordered top color="#28DF47" :value="$store.getters.product_count" dot offset-x="10" offset-y="10">
-                    <v-btn dark icon color="#28DF47" @click="$store.state.sidebar = true">
+                <v-badge bordered top color="#69BCB8" :value="$store.getters.product_count" dot offset-x="10" offset-y="10">
+                    <v-btn dark icon color="#69BCB8" @click="$store.state.sidebar = true">
                         <i class="im im-shopping-cart" style="font-size: 15px"></i>
                     </v-btn>
                 </v-badge>
 
                 <!-- search -->
-                <v-btn dark icon color="#28DF47" @click="mobileSearch = !mobileSearch">
+                <v-btn dark icon color="#69BCB8" @click="mobileSearch = !mobileSearch">
                     <i class="im im-magnifier" style="font-size: 15px"></i>
                 </v-btn>
 
                 <!-- menu -->
-                <v-menu color="#28DF47" left transition="slide-y-transition" bottom>
+                <v-menu color="#69BCB8" left transition="slide-y-transition" bottom>
                     <template v-slot:activator="{ on, attrs }">
-                        <v-btn color="#28DF47" icon depressed dark v-bind="attrs" v-on="on">
+                        <v-btn color="#69BCB8" icon depressed dark v-bind="attrs" v-on="on">
                             <i class="im im-menu-dot-v" style="font-size: 15px"></i>
                         </v-btn>
                     </template>
-                    <v-list nav dense color="#28DF47" dark>
+                    <v-list nav dense color="#69BCB8" dark>
                         <v-list-item v-for="category in categories.concat(categoriesNotInList)" :key="category.idCategory" :to="`/category/${category.idCategory}`">
                             <v-list-item-title>{{ category.categoryName }}</v-list-item-title>
                         </v-list-item>
@@ -191,6 +190,7 @@
 </template>
 
 <script>
+import serverPath from '../../plugins/ServerSidePath'
 export default {
     data() {
         return {
@@ -211,19 +211,21 @@ export default {
             social_media: [{
                     icon: 'facebook',
                     id: 1,
-                    color: '#28DF47'
+                    color: '#69BCB8'
                 },
                 {
                     icon: 'twitter',
                     id: 2,
-                    color: '#28DF47'
+                    color: '#69BCB8'
                 },
                 {
                     icon: 'instagram',
                     id: 3,
-                    color: '#28DF47'
+                    color: '#69BCB8'
                 },
             ],
+            app_info: {},
+            imagePath: new serverPath().URL
         }
     },
 
@@ -236,8 +238,8 @@ export default {
             .catch(err => {
                 console.error(err);
             });
-
         self.getCategories();
+        self.$store.dispatch('app_settings');
     },
 
     watch: {
@@ -253,6 +255,14 @@ export default {
             } else {
                 return sessionStorage.username
             }
+        },
+
+        totalPrice() {
+            return this.$store.getters.totalPrice;
+        },
+
+        appinfo() {
+            return this.$store.getters.appInfo;
         },
     },
 
@@ -385,7 +395,7 @@ export default {
                     position: absolute;
                     width: fit-content;
                     height: 100%;
-                    background: #28DF47;
+                    background: #69BCB8;
                     color: white;
                     display: flex;
                     align-content: center;
@@ -500,7 +510,7 @@ export default {
                 a {
                     display: block;
                     padding: 10px 20px;
-                    color: #28DF47;
+                    color: #69BCB8;
                     position: relative;
                     text-decoration: none;
 
@@ -512,7 +522,7 @@ export default {
                         bottom: 0;
                         right: 0;
                         margin: 0 auto;
-                        background: #28DF47;
+                        background: #69BCB8;
                         border-radius: 10px;
                         transition: all 0.2s ease 0.05s;
                     }

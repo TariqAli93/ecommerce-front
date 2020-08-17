@@ -12,9 +12,9 @@
     "moment": "^2.27.0",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
+    "vue-fake-input": "^1.0.5",
     "vue-meta": "^2.4.0",
     "vue-router": "^3.2.0",
-    "vue-verification-code-input": "^1.0.0",
     "vuetify": "^2.2.11",
     "vuex": "^3.4.0"
   },

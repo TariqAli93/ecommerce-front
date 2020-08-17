@@ -4,11 +4,11 @@
         <v-container>
             <v-breadcrumbs :items="breadcrumb_list">
                 <template v-slot:divider>
-                    <i style="color: #28DF47; font-size: 15px" class="im im-arrow-left" aria-hidden="true"></i>
+                    <i style="color: #69BCB8; font-size: 15px" class="im im-arrow-left" aria-hidden="true"></i>
                 </template>
                 <template v-slot:item="{ item }">
-                    <v-breadcrumbs-item :to="item.href" style="color: #28DF47" :disabled="item.disabled">
-                        <span style="color: #28DF47">{{item.text.toUpperCase()}}</span>
+                    <v-breadcrumbs-item :to="item.href" style="color: #69BCB8" :disabled="item.disabled">
+                        <span style="color: #69BCB8">{{item.text.toUpperCase()}}</span>
                     </v-breadcrumbs-item>
                 </template>
             </v-breadcrumbs>
@@ -45,28 +45,30 @@
 
 <script>
 export default {
-    metaInfo: {
-        title: 'الفواتير',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
+    metaInfo() {
+        return {
+            title: 'الفواتير',
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
             },
-            {
-                name: 'description',
-                content: 'foo'
+            bodyAttrs: {
+                class: ['body']
             },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
     },
     data() {
         return {

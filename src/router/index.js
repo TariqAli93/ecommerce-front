@@ -13,6 +13,34 @@ import PageNotFound from '../views/PageNotFound'
 
 Vue.use(VueRouter)
 
+function isLogginGuard(to, from, next) {
+  let isAuthenticated = false;
+  let isSession = false;
+  let access_token = null;
+
+  if(localStorage.getItem('ACCESS_TOKEN')) {
+    isSession = false;
+    access_token = localStorage.ACCESS_TOKEN;
+
+  } else if(sessionStorage.getItem('ACCESS_TOKEN')) {
+    isSession = true;
+    access_token = sessionStorage.ACCESS_TOKEN;
+  } else {
+    access_token = null;
+  }
+
+  if (access_token !== null)
+      isAuthenticated = true;
+  else
+      isAuthenticated = false;
+  if (isAuthenticated) {
+      next('/');
+  } else {
+      next();
+  }
+}
+
+
   const routes = [
   {
     path: '/',
@@ -26,6 +54,7 @@ Vue.use(VueRouter)
     path: '/login',
     name: 'login',
     component: Login,
+    beforeEnter: isLogginGuard,
     meta: {
       requiresVisitor: true
     }
@@ -33,6 +62,7 @@ Vue.use(VueRouter)
   {
     path: '/register',
     name: 'register',
+    beforeEnter: isLogginGuard,
     component: Register,
     meta: {
       requiresVisitor: true

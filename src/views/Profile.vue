@@ -14,11 +14,11 @@
         <v-container>
             <v-breadcrumbs :items="breadcrumb_list">
                 <template v-slot:divider>
-                    <i style="color: #28DF47; font-size: 15px" class="im im-arrow-left" aria-hidden="true"></i>
+                    <i style="color: #69BCB8; font-size: 15px" class="im im-arrow-left" aria-hidden="true"></i>
                 </template>
                 <template v-slot:item="{ item }">
-                    <v-breadcrumbs-item :to="item.href" style="color: #28DF47" :disabled="item.disabled">
-                        <span style="color: #28DF47">{{item.text.toUpperCase()}}</span>
+                    <v-breadcrumbs-item :to="item.href" style="color: #69BCB8" :disabled="item.disabled">
+                        <span style="color: #69BCB8">{{item.text.toUpperCase()}}</span>
                     </v-breadcrumbs-item>
                 </template>
             </v-breadcrumbs>
@@ -27,7 +27,7 @@
 
     <v-dialog v-model="updateProfileModal" persistent max-width="500px" transition="dialog-transition">
         <v-card class="elevation-0 pa-0">
-            <v-toolbar dark color="#28DF47" elevation="0">
+            <v-toolbar dark color="#69BCB8" elevation="0">
                 <v-btn icon dark @click="updateProfileModal = false">
                     <i class="im im-x-mark"></i>
                 </v-btn>
@@ -37,15 +37,15 @@
             <v-form ref="updateProfile" class="pa-5" v-model="valid" lazy-validation @submit.prevent="update">
                 <v-row>
                     <v-col cols="12">
-                        <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /^07([\d]{3})[(\D\s)]?[\d]{3}[(\D\s)]?[\d]{3}$/.test(v) || 'رقم الهاتف غير صحيح']" type="text" required v-model="phone" label="رقم الهاتف" prepend-inner-icon="fa-phone"></v-text-field>
+                        <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب', v => /^07([\d]{3})[(\D\s)]?[\d]{3}[(\D\s)]?[\d]{3}$/.test(v) || 'رقم الهاتف غير صحيح']" type="text" required v-model="phone" label="رقم الهاتف" prepend-inner-icon="fa-phone"></v-text-field>
                     </v-col>
 
                     <v-col cols="12">
-                        <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required v-model="address" label="العنوان" prepend-inner-icon="fa-map-marker"></v-text-field>
+                        <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب']" type="text" required v-model="address" label="العنوان" prepend-inner-icon="fa-map-marker"></v-text-field>
                     </v-col>
                 </v-row>
 
-                <v-btn color="#28DF47" depressed block dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
+                <v-btn color="#69BCB8" depressed block dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
                     تحديث
                 </v-btn>
             </v-form>
@@ -54,7 +54,7 @@
 
     <v-dialog v-model="updatePasswordModal" persistent max-width="500px" transition="dialog-transition">
         <v-card class="elevation-0 pa-0">
-            <v-toolbar dark color="#28DF47" elevation="0">
+            <v-toolbar dark color="#69BCB8" elevation="0">
                 <v-btn icon dark @click="updatePasswordModal = false">
                     <i class="im im-x-mark"></i>
                 </v-btn>
@@ -64,15 +64,15 @@
             <v-form ref="updatePassword" class="pa-5" v-model="valid" lazy-validation @submit.prevent="resetPassword($event)">
                 <v-row>
                     <v-col cols="12">
-                        <v-text-field color="#28DF47" label="كلمة المرور القديمة" :type="showPassword ? 'text' : 'password'" v-model="oldPassword" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword" prepend-inner-icon="fa-lock"></v-text-field>
+                        <v-text-field color="#69BCB8" label="كلمة المرور القديمة" :type="showPassword ? 'text' : 'password'" v-model="oldPassword" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword" prepend-inner-icon="fa-lock"></v-text-field>
                     </v-col>
 
                     <v-col cols="12">
-                        <v-text-field color="#28DF47" :rules="[v => !!v || 'هذا الحقل مطلوب', v => (v && v.length > 6) || 'كلمة المرور قصيرة']" label="كلمة المرور الجديدة" :type="showPassword ? 'text' : 'password'" required v-model="newPassword" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword" prepend-inner-icon="fa-lock"></v-text-field>
+                        <v-text-field color="#69BCB8" :rules="[v => !!v || 'هذا الحقل مطلوب', v => (v && v.length > 6) || 'كلمة المرور قصيرة']" label="كلمة المرور الجديدة" :type="showPassword ? 'text' : 'password'" required v-model="newPassword" :append-icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click:append="showPassword = !showPassword" prepend-inner-icon="fa-lock"></v-text-field>
                     </v-col>
                 </v-row>
 
-                <v-btn color="#28DF47" depressed block dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
+                <v-btn color="#69BCB8" depressed block dark :loading="btn_loading" :disabled="!valid" width="200px" rounded large class="mx-auto" type="submit">
                     تحديث
                 </v-btn>
             </v-form>
@@ -95,7 +95,7 @@
                                 <span>تغير كلمة المرور</span>
                             </v-btn>
 
-                            <v-btn color="#28DF47" depressed medium dark @click="updateProfileModal = true" class="mr-5">
+                            <v-btn color="#69BCB8" depressed medium dark @click="updateProfileModal = true" class="mr-5">
                                 <i class="im im-edit" style="font-size: 13px; margin-left: 10px"></i>
                                 <span>تحرير</span>
                             </v-btn>
@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="banner-tabs">
-                    <v-tabs v-model="profileTabs" background-color="white" style="border-bottom: 1px solid rgba(0,0,0,0.10)" color="#28DF47" left>
+                    <v-tabs v-model="profileTabs" background-color="white" style="border-bottom: 1px solid rgba(0,0,0,0.10)" color="#69BCB8" left>
                         <v-tab>معلوماتي</v-tab>
                         <v-tab>فواتيري</v-tab>
                     </v-tabs>
@@ -145,7 +145,7 @@
                         <v-tab-item>
                             <v-data-table :headers="headers" :items.sync="invoices" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer @page-count="pageCount = $event" class="elevation-0">
                                 <template v-slot:item.actions="{ item }">
-                                    <v-btn color="#28DF47" small depressed dark :to="`/invoice/${item.idInvoice}`">
+                                    <v-btn color="#69BCB8" small depressed dark :to="`/invoice/${item.idInvoice}`">
                                         <span>عرض الفاتورة</span>
                                     </v-btn>
                                 </template>
@@ -160,7 +160,7 @@
                             </v-data-table>
 
                             <div class="text-center d-flex align-center justify-center pt-2">
-                                <v-pagination v-model="page" color="#28DF47" :length="pageCount"></v-pagination>
+                                <v-pagination v-model="page" color="#69BCB8" :length="pageCount"></v-pagination>
                             </div>
                         </v-tab-item>
                     </v-tabs-items>
@@ -173,28 +173,30 @@
 
 <script>
 export default {
-    metaInfo: {
-        title: 'الملف الشخصي',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
+    metaInfo() {
+        return {
+            title: 'الملف الشخصي | ' + this.userInfo.userName,
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
             },
-            {
-                name: 'description',
-                content: 'foo'
+            bodyAttrs: {
+                class: ['body']
             },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
     },
     data() {
         return {
@@ -307,7 +309,7 @@ export default {
             updatePromise.then(data => {
                 setTimeout(() => {
                     self.addToCartSnackbar = true;
-                    self.addToCartSnackbarColor = '#28DF47';
+                    self.addToCartSnackbarColor = '#69BCB8';
                     self.addToCartSnackbarText = 'تم تحديث المستخدم بنجاح';
                     self.btn_loading = false;
                     self.updateProfileModal = false;
@@ -325,6 +327,7 @@ export default {
 
         resetPassword(event) {
             let self = this;
+            self.btn_loading = true;
             let token = self.$store.state.token;
             let user_id = self.decodeJwt(token).id;
 
@@ -344,7 +347,7 @@ export default {
                     }
                 }).then(data => {
                     self.addToCartSnackbar = true;
-                    self.addToCartSnackbarColor = '#28DF47';
+                    self.addToCartSnackbarColor = '#69BCB8';
                     self.addToCartSnackbarText = 'تم تحديث كلمة المرور بنجاح';
                     self.btn_loading = false;
                     self.updatePasswordModal = false;
@@ -506,14 +509,14 @@ export default {
             text-align: center;
             position: relative;
             padding: 10px 0px;
-            color: #28DF47;
+            color: #69BCB8;
 
             &:before {
                 content: "";
                 position: absolute;
                 width: 0%;
                 height: 3px;
-                background: #28DF47;
+                background: #69BCB8;
                 bottom: 0;
                 left: 0;
                 transition: all 0.2s ease 0.09s;

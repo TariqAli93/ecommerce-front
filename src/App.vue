@@ -2,17 +2,17 @@
 <v-app>
     <div class="mobile-detect" v-show="detectMob()">
         <h1>انت تستخدم هاتف</h1>
-        
+
         <h4>{{ mobileVersion }}</h4>
-        
+
         <p>لتجربة افضل يرجى تحميل التطبيق الخاص بنا على</p>
 
-        <v-btn color="#28DF47" v-show="androidPhone" rounded medium depressed dark>
+        <v-btn color="#69BCB8" v-show="androidPhone" rounded medium depressed dark>
             <i class="im im-google-play"></i>
             <span>Google Play</span>
         </v-btn>
-        
-        <v-btn color="#28DF47" v-show="iosPhone" rounded medium depressed dark>
+
+        <v-btn color="#69BCB8" v-show="iosPhone" rounded medium depressed dark>
             <i class="im im-apple-os"></i>
             <span>Apple Store</span>
         </v-btn>
@@ -26,7 +26,7 @@
             <div class="pa-5 white" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important">
                 <div class="d-flex justify-space-between align-center">
                     <h3>سلة المشتريات</h3>
-                    <v-btn color="#28DF47" fab elevation="0" dark width="50px" height="50px" @click="$store.state.sidebar = false">
+                    <v-btn color="#69BCB8" fab elevation="0" dark width="50px" height="50px" @click="$store.state.sidebar = false">
                         <i class="im im-x-mark"></i>
                     </v-btn>
                 </div>
@@ -35,32 +35,34 @@
         <sidecart />
         <template v-slot:append>
             <div class="pa-5 white" v-if="$store.getters.product_count > 0" style="border-top: 1px solid rgba(0, 0, 0, 0.1) !important">
-                <v-btn v-if="$store.getters.isLoggedIn !== true" color="#28DF47" block dark depressed to="/login">
+                <v-btn v-if="$store.getters.isLoggedIn !== true" color="#69BCB8" block dark depressed to="/login">
                     تسجيل الدخول
                 </v-btn>
 
-                <v-btn v-else color="#28DF47" block dark depressed to="/cart">
+                <v-btn v-else color="#69BCB8" block dark depressed to="/cart">
                     عرض السلة
                 </v-btn>
                 <h4 class="d-block text-center pa-3">المجموع - بدون ضرائب : {{ totalPrice }} <i class="fa fa-dollar"></i></h4>
             </div>
         </template>
     </v-navigation-drawer>
-    <v-app-bar v-if="showDefaultLayout" class="toolbar-custom" scroll-threshold="300" fixed style="z-index: 4500" color="white">
+    <v-app-bar v-if="showDefaultLayout" class="toolbar-custom" elevate-on-scroll scroll-threshold="300" fixed style="z-index: 4500" color="white">
         <navbar />
     </v-app-bar>
 
-    <v-main id="scrollingTarget" :class="{'is-padding': showDefaultLayout}">
+    <v-main :id="routeName" :class="{'is-padding': showDefaultLayout}">
         <router-view></router-view>
     </v-main>
 
     <v-footer inset v-if="showDefaultLayout" class="footer">
         <div class="footer-container">
             <div class="input">
-                <input type="text" class="subscribe-input" placeholder="اشتراك في النشرة البريدية">
-                <button class="subscribe-button">
-                    <i class="im im-check-mark"></i>
-                </button>
+                <form ref="emailSubsecription" @submit.prevent="subscribeEmail($event)">
+                    <input type="text" class="subscribe-input" v-model="subscribeInputValue" placeholder="اشتراك في النشرة البريدية">
+                    <button class="subscribe-button" type="submit">
+                        <i class="im im-check-mark"></i>
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -70,7 +72,7 @@
             <div class="footer-item footer-item-logo">
                 <router-link tag="a" class="logo" to="/"></router-link>
                 <p class="logo-slug">
-                    مرحبا بك في المتجر العراقي للتسوق الالكتروني
+                    مرحبا بك في {{$store.getters.appInfo.app_name}} للتسوق الالكتروني
                 </p>
             </div>
 
@@ -104,13 +106,30 @@
             </div>
         </div>
     </v-footer>
-    <v-btn color="#28DF47" dark id="goToUpBtn" fab small fixed right bottom @click="$vuetify.goTo(0)">
+    <v-btn color="#69BCB8" dark id="goToUpBtn" fab small fixed right bottom @click="$vuetify.goTo(0)">
         <i class="im im-arrow-up" style="font-size: 13px"></i>
     </v-btn>
 </v-app>
 </template>
 
 <style lang="scss">
+.toolbar-custom.v-app-bar--is-scrolled {
+    box-shadow: 0 3px 15px 0 rgba(black, .20) !important;
+}
+.v-main {
+    &.is-padding {
+        padding-top: 160px !important;
+
+        @media (max-width: 1161px) {
+            padding-top: 87px !important;
+        }
+    }
+
+    &#home {
+        padding-top: 0px !important;
+    }
+}
+
 .mobile-detect {
     position: fixed;
     width: 100vw;
@@ -132,7 +151,8 @@
         height: auto !important;
         width: auto !important;
         padding: 20px 30px !important;
-        margin-bottom:  20px;
+        margin-bottom: 20px;
+
         i {
             margin-left: 10px;
             font-size: 15px;
@@ -177,7 +197,7 @@
 
             a {
                 display: flex;
-                color: #28DF47;
+                color: #69BCB8;
                 opacity: .5;
                 font-size: 15px;
                 width: 50px;
@@ -202,7 +222,7 @@
                     left: 0;
                     right: 0;
                     margin: 0 auto;
-                    background: #28DF47;
+                    background: #69BCB8;
                     top: 0;
                     z-index: 0;
                     border-radius: 5px;
@@ -235,12 +255,12 @@
                 width: 100%;
                 background: transparent;
                 height: 55px;
-                border: 2px solid #28df28;
+                border: 2px solid #69BCB8;
                 display: block;
                 border-radius: 50px;
                 padding-right: 70px;
                 outline: none;
-                color: #28df28;
+                color: #69BCB8;
                 opacity: .5;
                 transition: all 0.2s ease 0.05s;
 
@@ -261,7 +281,7 @@
                 position: absolute;
                 width: 40px;
                 height: 40px;
-                background: #28df28;
+                background: #69BCB8;
                 border: none;
                 outline: none;
                 box-shadow: none;
@@ -305,7 +325,7 @@
                     background: {
                         image: url('./assets/images/logo.png');
                         repeat: no-repeat;
-                        size: cover;
+                        size: contain;
                         position: center;
                     }
 
@@ -315,7 +335,7 @@
                 }
 
                 .logo-slug {
-                    color: #28DF47;
+                    color: #69BCB8;
                     font-weight: 900;
                     font-size: 13px;
                     display: block;
@@ -334,7 +354,7 @@
                 display: block;
                 text-align: right;
                 text-decoration: none;
-                color: #28DF47;
+                color: #69BCB8;
                 padding: 5px 5px;
                 position: relative;
                 min-width: 120px;
@@ -347,7 +367,7 @@
                     height: 2px;
                     bottom: 0;
                     right: 0;
-                    background: #28DF47;
+                    background: #69BCB8;
                     transition: all 0.2s ease 0.05s;
                 }
 
@@ -372,7 +392,8 @@
 .toolbar-custom {
     height: auto !important;
     padding: 0px !important;
-    box-shadow: 0 2px 10px 0 rgba(black, .10) !important;
+    // box-shadow: 0 2px 10px 0 rgba(black, .10) !important;
+    // box-shadow: none !important;
     transition: all 0.2s ease 0.12s;
 
     .v-toolbar__content {
@@ -423,13 +444,13 @@ export default {
     data() {
         return {
             sidebar: false,
+            subscribeInputValue: '',
             categories: [],
             loading_screen: true,
             upBtn: false,
             mobileVersion: '',
             androidPhone: false,
             iosPhone: false,
-            app_info: {},
             navlist: [{
                     to: '/',
                     text: 'الرئيسية'
@@ -465,8 +486,8 @@ export default {
             return this.$store.getters.totalPrice;
         },
 
-        appinfo() {
-            return this.app_info;
+        routeName() {
+            return this.$route.name
         }
     },
 
@@ -474,20 +495,11 @@ export default {
         setTimeout(() => {
             this.loading_screen = false;
         }, 2000);
-
         window.addEventListener('scroll', event => {
             this.goUpBtn();
         });
-
-        this.axios.get('settings')
-        .then(data => {
-            this.app_info = data.data[0];
-        })
-        .catch(err => {
-            console.error(err)
-        });
-
         this.getCategories();
+        this.$store.dispatch('app_settings');
     },
 
     watch: {
@@ -496,7 +508,7 @@ export default {
 
             setTimeout(() => {
                 this.loading_screen = false;
-            }, 2000)
+            }, 2000);
         }
     },
 
@@ -531,6 +543,17 @@ export default {
                 .catch(err => {
                     console.error(err);
                 })
+        },
+
+        subscribeEmail(e) {
+            if (this.subscribeInputValue === '') {
+                window.alert('لا يمكن ترك الحقل فارغ')
+                return;
+            } else {
+                window.alert('شكرا لكم تم الاشتراك');
+                this.subscribeInputValue = '';
+                return;
+            }
         },
 
         detectMob() {
@@ -689,7 +712,7 @@ export default {
             this.mobileVersion = os + ' ' + osVersion;
 
             if (os === 'Android' || os === 'iOS') {
-                if(os === 'Android') {
+                if (os === 'Android') {
                     this.androidPhone = true;
                 } else {
                     this.iosPhone = true;
@@ -701,28 +724,30 @@ export default {
         }
     },
 
-    metaInfo: {
-        title: 'الصفحة الرئيسية',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
+    metaInfo() {
+        return {
+            title: 'الصفحة الرئيسية',
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
             },
-            {
-                name: 'description',
-                content: 'foo'
+            bodyAttrs: {
+                class: ['body']
             },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
     },
 };
 </script>

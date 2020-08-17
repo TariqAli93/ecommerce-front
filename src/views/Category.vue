@@ -14,11 +14,11 @@
         <v-container>
             <v-breadcrumbs :items="breadcrumb_list">
                 <template v-slot:divider>
-                    <i style="color: #28DF47; font-size: 15px" class="im im-arrow-left" aria-hidden="true"></i>
+                    <i style="color: #69BCB8; font-size: 15px" class="im im-arrow-left" aria-hidden="true"></i>
                 </template>
                 <template v-slot:item="{ item }">
-                    <v-breadcrumbs-item :to="item.href" style="color: #28DF47" :disabled="item.disabled">
-                        <span style="color: #28DF47">{{item.text}}</span>
+                    <v-breadcrumbs-item :to="item.href" style="color: #69BCB8" :disabled="item.disabled">
+                        <span style="color: #69BCB8">{{item.text}}</span>
                     </v-breadcrumbs-item>
                 </template>
             </v-breadcrumbs>
@@ -41,6 +41,9 @@
                     </v-sheet>
 
                     <div class="card">
+                        <div class="out-of-stock" v-if="product.quantity < 1">
+                            <span>غير متوفر</span>
+                        </div>
                         <div class="card-image">
                             <img :src="server_url + product.image" />
                         </div>
@@ -52,12 +55,12 @@
 
                             <div class="card-content-body">
                                 <div class="card-content-body-btns">
-                                    <v-btn color="secondary" rounded width="40px" min-width="20px" height="40px" :to="`/product/${product.idProduct}`">
-                                        <i class="im im-eye" style="font-size: 13px"></i>
+                                    <v-btn color="secondary" fab :to="`/product/${product.idProduct}`">
+                                        <i class="im im-eye" style="font-size: 18px"></i>
                                     </v-btn>
 
-                                    <v-btn color="#28DF47" dark rounded width="40px" min-width="20px" height="40px" @click="saveToCart(product)">
-                                        <i class="im im-shopping-cart" style="font-size: 13px"></i>
+                                    <v-btn color="#69BCB8" :dark="product.quantity > 0" fab :disabled="product.quantity < 1" @click="saveToCart(product)">
+                                        <i class="im im-shopping-cart" style="font-size: 18px"></i>
                                     </v-btn>
                                 </div>
 
@@ -116,7 +119,7 @@ export default {
     mounted() {
         this.categoriesName();
     },
-    
+
     methods: {
         saveToCart(product) {
             this.addToCartSnackbar = false;
@@ -132,13 +135,13 @@ export default {
         categoriesName() {
             let self = this;
             self.axios.get(`category/${self.$route.params.id}`)
-            .then(data => {
-                self.breadcrumb_list[2].text = data.data.categoryName;
-                self.cateName = data.data.categoryName;
-            })
-            .catch(err => {
-                throw new Error(err)
-            })
+                .then(data => {
+                    self.breadcrumb_list[2].text = data.data.categoryName;
+                    self.cateName = data.data.categoryName;
+                })
+                .catch(err => {
+                    throw new Error(err)
+                })
         },
 
         getProductsByCate(id) {
@@ -175,28 +178,30 @@ export default {
         }
     },
 
-    metaInfo: {
-        title: 'التصنيفات',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
+    metaInfo() {
+        return {
+            title: this.cateName,
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
             },
-            {
-                name: 'description',
-                content: 'foo'
+            bodyAttrs: {
+                class: ['body']
             },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
     },
 }
 </script>
@@ -212,6 +217,19 @@ export default {
     box-shadow: 0 4px 13px 0 rgb(0, 0, 0, 9%);
     transition: all 0.2s ease 0.05s;
 
+    .out-of-stock {
+        position: absolute;
+        padding: 10px 0px;
+        background: black;
+        color: white;
+        width: 165px;
+        text-align: center;
+        transform: rotate(45deg) translate(43px, -20px);
+        z-index: 1;
+        font-size: 16px;
+        font-weight: 900;
+    }
+
     .product-name {
         display: flex;
         align-items: flex-end;
@@ -225,7 +243,7 @@ export default {
         height: 200px;
         background: rgb(0, 0, 0);
         background: linear-gradient(0deg, rgba(0, 0, 0, 0.6898109585631127) 0%, rgba(255, 255, 255, 0) 100%);
-        color: #28DF47;
+        color: #69BCB8;
     }
 
     &-image {
@@ -269,14 +287,14 @@ export default {
             text-align: center;
             position: relative;
             padding: 10px 0px;
-            color: #28DF47;
+            color: #69BCB8;
 
             &:before {
                 content: "";
                 position: absolute;
                 width: 0%;
                 height: 3px;
-                background: #28DF47;
+                background: #69BCB8;
                 bottom: 0;
                 left: 0;
                 transition: all 0.2s ease 0.09s;

@@ -18,11 +18,11 @@
         <v-container>
             <v-breadcrumbs :items="breadcrumb_list">
                 <template v-slot:divider>
-                    <i style="color: #28DF47; font-size: 15px" class="im im-arrow-left" aria-hidden="true"></i>
+                    <i style="color: #69BCB8; font-size: 15px" class="im im-arrow-left" aria-hidden="true"></i>
                 </template>
                 <template v-slot:item="{ item }">
-                    <v-breadcrumbs-item :to="item.href" style="color: #28DF47" :disabled="item.disabled">
-                        <span style="color: #28DF47">{{item.text.toUpperCase()}}</span>
+                    <v-breadcrumbs-item :to="item.href" style="color: #69BCB8" :disabled="item.disabled">
+                        <span style="color: #69BCB8">{{item.text.toUpperCase()}}</span>
                     </v-breadcrumbs-item>
                 </template>
             </v-breadcrumbs>
@@ -78,7 +78,7 @@
                     <div class="coupon">
                         <div v-if="$store.getters.isLoggedIn" class="d-flex align-center justify-center mb-5 pa-3" style="background: white; border-radius: 10px;">
                             <input type="text" class="coupon-input" v-model="couponInput" placeholder="كود الخصم">
-                            <v-btn color="#28DF47" :loading="couponLoading" :disabled="couponLoading" depressed rounded :dark="!couponLoading" @click="saveCoupon(couponInput)">
+                            <v-btn color="#69BCB8" :loading="couponLoading" :disabled="couponLoading" depressed rounded :dark="!couponLoading" @click="saveCoupon(couponInput)">
                                 حفظ الكود
                             </v-btn>
                         </div>
@@ -123,10 +123,10 @@
                         </v-list>
                         <v-divider></v-divider>
                         <div class="note pt-5">
-                            <v-textarea v-model="payment_note" color="#28DF47" label="تفاصيل اخرى" outlined></v-textarea>
+                            <v-textarea v-model="payment_note" color="#69BCB8" label="تفاصيل اخرى" outlined></v-textarea>
                         </div>
                         <v-divider></v-divider>
-                        <v-btn v-if="$store.getters.isLoggedIn" color="#28DF47" large depressed block rounded dark class="mt-3" @click="bay()">
+                        <v-btn v-if="$store.getters.isLoggedIn" color="#69BCB8" large depressed block rounded dark class="mt-3" @click="bay()">
                             اكمل عملية الشراء
                         </v-btn>
 
@@ -231,7 +231,7 @@ export default {
                             }, 1400)
                         } else {
                             setTimeout(() => {
-                                self.startSnackBar(`تم اضافة كود الخصم - ستحصل على خصم ${data.data.value} %`, '#28DF47');
+                                self.startSnackBar(`تم اضافة كود الخصم - ستحصل على خصم ${data.data.value} %`, '#69BCB8');
                                 self.couponLoading = false;
                                 localStorage.setItem('coupon', JSON.stringify(data.data));
 
@@ -292,7 +292,7 @@ export default {
                 }).then(result => {
                     self.loading_screen = true;
                     setTimeout(() => {
-                        self.startSnackBar('تم الشراء بنجاح . شكرا لكم', '#28DF47');
+                        self.startSnackBar('تم الشراء بنجاح . شكرا لكم', '#69BCB8');
                         self.loading_screen = false;
                         setTimeout(() => {
                             localStorage.removeItem('coupon');
@@ -318,28 +318,30 @@ export default {
         }
     },
 
-    metaInfo: {
-        title: 'سلة المشتريات',
-        titleTemplate: '%s | المتجر العراقي',
-        htmlAttrs: {
-            lang: 'ar',
-            amp: true
-        },
-        bodyAttrs: {
-            class: ['body']
-        },
-        meta: [{
-                charset: 'utf-8'
+    metaInfo() {
+        return {
+            title: 'سلة المشتريات',
+            titleTemplate: `%s | ${this.$store.getters.appInfo.app_name}`,
+            htmlAttrs: {
+                lang: 'ar',
+                amp: true
             },
-            {
-                name: 'description',
-                content: 'foo'
+            bodyAttrs: {
+                class: ['body']
             },
-            {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
-            }
-        ],
+            meta: [{
+                    charset: 'utf-8'
+                },
+                {
+                    name: 'description',
+                    content: 'foo'
+                },
+                {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1'
+                }
+            ],
+        }
     },
 }
 </script>
@@ -511,19 +513,6 @@ export default {
                 height: 100%;
             }
         }
-    }
-
-    .emptystate {
-        background: {
-            image: url('../assets/images/empty.png');
-            repeat: no-repeat;
-            size: contain;
-            position: center;
-        }
-
-        width: 350px;
-        height: 350px;
-        margin: 0 auto;
     }
 }
 </style>

@@ -14,6 +14,7 @@ export default new Vuex.Store({
     username: localStorage.getItem('username') || sessionStorage.getItem('username') || null,
     cart: cart ? JSON.parse(cart) : [],
     tax_number: 0,
+    app_info: {},
   },
   
   mutations: {
@@ -89,6 +90,21 @@ export default new Vuex.Store({
       }
       localStorage.setItem('cart', JSON.stringify(state.cart));
     },
+
+    APP_SETTINGS(state) {
+      axios.get('settings')
+      .then(data => {
+        state.app_info = {
+          app_address: data.data.app_address,
+          app_closed: data.data.app_closed,
+          app_logo: data.data.app_logo,
+          app_mobile_logo: data.data.app_mobile_logo,
+          app_name: data.data.app_name
+        }
+      }).catch(err => {
+        console.error(err)
+      })
+    }
   },
   
   getters: {
@@ -113,6 +129,10 @@ export default new Vuex.Store({
 
       return total
     },
+
+    appInfo(state) {
+      return state.app_info
+    }
   },
 
   actions: {
@@ -170,6 +190,10 @@ export default new Vuex.Store({
     countDownQty({commit}, index) {
       commit('DECRES_QTY', index);
     },
+
+    app_settings({commit}) {
+      commit('APP_SETTINGS')
+    } 
   },
   modules: {
   }
