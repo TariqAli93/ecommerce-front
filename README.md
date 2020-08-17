@@ -1,19 +1,19 @@
-# ecommerce-front
+### Project Name: 
+```
+ecommerce front
+```
 
-## Project setup
+### Before Start Project
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Run And Serve The Project
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Build The Project
 ```
 npm run build
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
